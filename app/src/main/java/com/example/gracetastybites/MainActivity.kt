@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -33,9 +34,12 @@ import com.example.gracetastybites.ui.theme.GraceTastyBitesTheme
 import com.example.gracetastybites.logo.Logo
 import com.example.gracetastybites.button.ReusableButton
 import com.example.gracetastybites.socialMedia.SocialMediaLoop
+import com.example.gracetastybites.sqllite.DatabaseHelper
 
 //Screen Import
 import com.example.gracetastybites.screens.LoginScreen
+import com.example.gracetastybites.screens.SignUpScreen
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +47,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             GraceTastyBitesTheme {
 
-                val navManager = rememberNavController()
+                val navManager = rememberNavController();
+                val dbHelper = DatabaseHelper(this);
 
                 // NavHost goes here
                 NavHost(
@@ -54,7 +59,7 @@ class MainActivity : ComponentActivity() {
                         HomeScreen(navManager)
                     }
                     composable("login") {
-                         LoginScreen(navManager)
+                         LoginScreen(navManager, dbHelper)
                     }
                     composable("admin-dashboard") {
                         Text("admin")
@@ -63,7 +68,7 @@ class MainActivity : ComponentActivity() {
                         Text("Forgot my password")
                     }
                     composable("sign-up") {
-                        Text("Sign Up")
+                        SignUpScreen(navManager, dbHelper)
                     }
                 }
         }

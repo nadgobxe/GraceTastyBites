@@ -16,17 +16,17 @@ import androidx.compose.foundation.layout.*
 Params:
 *@param sizeWidth -> Int | Controls the width of the image
 *@param sizeHeight -> Int  | Controls the height of the image
+*@param contentAlignment -> String | Default is Alignment.Center
  Reusable Logo
 ======================
 */
 
 @Composable
-fun Logo(sizeWidth: Int, sizeHeight: Int) {
+fun Logo(sizeWidth: Int, sizeHeight: Int, contentAlignment: Alignment = Alignment.Center) {
     Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 32.dp),
-            contentAlignment = Alignment.Center
+            .fillMaxWidth(),
+            contentAlignment = contentAlignment
     ) {
         Image(
             painter = painterResource(id = R.drawable.logo),

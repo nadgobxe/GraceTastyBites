@@ -34,12 +34,13 @@ import com.example.gracetastybites.logo.Logo
 // Import Mock up data base user login
 import com.example.gracetastybites.mockData.UserAuth
 import com.example.gracetastybites.mockData.tableUserAuth
+import com.example.gracetastybites.sqllite.DatabaseHelper
 import com.example.gracetastybites.ui.theme.LabelInput
 import com.example.gracetastybites.ui.theme.SemiBoldLabelLarge
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(navManager: NavController) {
+fun LoginScreen(navManager: NavController, dbHelper: DatabaseHelper) {
 
     val bgCream = MaterialTheme.colorScheme.background
 
