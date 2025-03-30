@@ -10,6 +10,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.layout.*
 
+/**
+======================
+*@Reusable Logo
+Params:
+*@param sizeWidth -> Int | Controls the width of the image
+*@param sizeHeight -> Int  | Controls the height of the image
+ Reusable Logo
+======================
+*/
+
 @Composable
 fun Logo(sizeWidth: Int, sizeHeight: Int) {
     Box(

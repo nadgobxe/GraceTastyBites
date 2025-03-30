@@ -16,7 +16,20 @@ import com.example.gracetastybites.ui.theme.ButtonTextStyle
 // sizeWidth  and sizeHeight = Integer to set the width of the button
 // navManager = passing the navManager prop
 // otherCommands = Optional prop to pass functions of onClick button
-
+/**
+======================
+ *@Reusable Button
+Params:
+ * @param buttonText -> String | Controls the button text
+ * @param path -> String  | Controls the path where to redirect when pressing on the button | navManager.navigate(path)
+ * path can be optional - if path is empty it will not redirect
+ * @param sizeWidth -> Int | Controls the width of the button
+ * @param sizeHeight -> Int  | Controls the height of the button
+ * @param navManager -> NavController | We are passing the navManager from @composable to button's @composable. Used to handle navigation
+ * @param otherCommands -> Function | We are passing anonymous or defined functions to handle the click or other actions
+Reusable Button
+======================
+ */
 
 @Composable
 fun ReusableButton(buttonText: String, path: String, sizeWidth:Int, sizeHeight:Int, navManager: NavController, otherCommands: () -> Unit = {}) {
