@@ -1,5 +1,6 @@
 package com.example.gracetastybites
 
+import android.content.Context
 import android.media.Image
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -39,6 +40,7 @@ import com.example.gracetastybites.sqllite.DatabaseHelper
 //Screen Import
 import com.example.gracetastybites.screens.LoginScreen
 import com.example.gracetastybites.screens.SignUpScreen
+import com.example.gracetastybites.screens.AdminDashboardScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,19 +52,26 @@ class MainActivity : ComponentActivity() {
                 val navManager = rememberNavController();
                 val dbHelper = DatabaseHelper(this);
 
+                //Cookies
+                val sharedPreferences = getSharedPreferences("AuthPrefs", Context.MODE_PRIVATE)
+                val isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
+                val savedEmail = sharedPreferences.getString("email", "") ?: "";
+                val userRole = sharedPreferences.getString("userRole", "") ?: "";
+
+
                 // NavHost goes here
                 NavHost(
                     navController = navManager,
                     startDestination = "home"
                 ) {
                     composable("home") {
-                        HomeScreen(navManager)
+                        HomeScreen(navManager, isLoggedIn, userRole, savedEmail)
                     }
                     composable("login") {
-                         LoginScreen(navManager, dbHelper)
+                        LoginScreen(navManager, dbHelper, sharedPreferences)
                     }
                     composable("admin-dashboard") {
-                        Text("admin")
+                        AdminDashboardScreen(navManager, dbHelper, sharedPreferences)
                     }
                     composable("forgot-password") {
                         Text("Forgot my password")
@@ -71,55 +80,69 @@ class MainActivity : ComponentActivity() {
                         SignUpScreen(navManager, dbHelper)
                     }
                 }
+            }
         }
     }
-}
 
-@Composable
-fun HomeScreen(navManager: NavController) {
-    val bgCream = MaterialTheme.colorScheme.background;
-    val welcomeTextParagraph = "Northampton’s home of crispy, golden, juicy, and packed with flavour.\u2028 Freshly made, always tasty."
+    @Composable
+    fun HomeScreen(navManager: NavController, isLoggedIn: Boolean, userRole: String, savedEmail: String) {
+        val bgCream = MaterialTheme.colorScheme.background;
+        val welcomeTextParagraph = "Northampton’s home of crispy, golden, juicy, and packed with flavour.\u2028 Freshly made, always tasty."
 
-    Column(
-        modifier = Modifier.fillMaxSize().background(bgCream),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-       Row() {
-            Logo(440,440);
-       }
-        Row(
-            modifier = Modifier.fillMaxWidth(0.8f).padding(top = 48.dp)
+        Column(
+            modifier = Modifier.fillMaxSize().background(bgCream),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Welcome to Grace Tasty Bites",
-                color = MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.titleLarge,
-                textAlign = TextAlign.Center)
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth(0.8f).padding(top = 24.dp)
-        ) {
-            Text(text = welcomeTextParagraph,
-                color = MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center)
+            Row() {
+                Logo(440,440);
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(0.8f).padding(top = 48.dp)
+            ) {
+                Text(text = "Welcome to Grace Tasty Bites",
+                    color = MaterialTheme.colorScheme.onBackground,
+                    style = MaterialTheme.typography.titleLarge,
+                    textAlign = TextAlign.Center)
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(0.8f).padding(top = 24.dp)
+            ) {
+                Text(text = welcomeTextParagraph,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center)
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(0.8f).padding(top = 48.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                println(isLoggedIn)
+                println("User Role is:")
+                println(userRole)
+                if(isLoggedIn) {
+                    when (userRole) {
+                        "admin" -> ReusableButton("Let's Eat!", "admin-dashboard", 150, 57, navManager = navManager)
+                        "customer" -> ReusableButton("Let's Eat!", "customer-dashboard", 150, 57, navManager = navManager)
+                        "staff" -> ReusableButton("Let's Eat!", "staff-dashboard", 150, 57, navManager = navManager)
+                        else ->  ReusableButton("Let's Eat!", "login", 150, 57, navManager = navManager)
+
+                    }
+                } else {
+                    ReusableButton("Let's Eat!", "login", 150, 57, navManager = navManager)
+                }
+//            ReusableButton("Let's Eat!", "login", 150, 57, navManager = navManager)
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(0.8f).padding(top = 48.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                SocialMediaLoop()
+            }
+
         }
 
-        Row(
-            modifier = Modifier.fillMaxWidth(0.8f).padding(top = 48.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            ReusableButton("Let's Eat!", "login", 150, 57, navManager = navManager)
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth(0.8f).padding(top = 48.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            SocialMediaLoop()
-        }
-
-    }
-
-}}
+    }}

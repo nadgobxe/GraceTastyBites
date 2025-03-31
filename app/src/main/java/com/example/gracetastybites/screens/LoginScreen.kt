@@ -1,5 +1,6 @@
 package com.example.gracetastybites.screens
 
+import android.content.SharedPreferences
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -40,7 +41,7 @@ import com.example.gracetastybites.ui.theme.SemiBoldLabelLarge
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(navManager: NavController, dbHelper: DatabaseHelper) {
+fun LoginScreen(navManager: NavController, dbHelper: DatabaseHelper, sharedPreferences: SharedPreferences) {
 
     val bgCream = MaterialTheme.colorScheme.background
 
@@ -66,6 +67,13 @@ fun LoginScreen(navManager: NavController, dbHelper: DatabaseHelper) {
         println(matchedUser);
         if( matchedUser != null ) {
             if(password == matchedUser.password) {
+
+                val editor = sharedPreferences.edit()
+                editor.putString("email", username)
+                editor.putBoolean("isLoggedIn", true)
+                editor.putString("userRole", matchedUser.role)
+                editor.apply()
+
                 return matchedUser;
             } else {
                 wrongPassword = true;
@@ -82,29 +90,29 @@ fun LoginScreen(navManager: NavController, dbHelper: DatabaseHelper) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-            Row() {
-                Logo(200,200);
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(0.8f).padding(top = 36.dp),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(text = "Hello",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = TextAlign.Center
-                )
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(0.8f).padding(top = 24.dp),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(text = "Login into your account to get some goodies",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = TextAlign.Center
-                )
-            }
+        Row() {
+            Logo(200,200);
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(0.8f).padding(top = 36.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(text = "Hello",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(0.8f).padding(top = 24.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(text = "Login into your account to get some goodies",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center
+            )
+        }
         Row(
             modifier = Modifier.fillMaxWidth(0.8f).padding(top = 36.dp),
             horizontalArrangement = Arrangement.Start
