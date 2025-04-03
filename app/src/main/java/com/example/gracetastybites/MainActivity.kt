@@ -86,6 +86,9 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun HomeScreen(navManager: NavController, isLoggedIn: Boolean, userRole: String, savedEmail: String) {
+
+        val db = DatabaseHelper(this).writableDatabase
+
         val bgCream = MaterialTheme.colorScheme.background;
         val welcomeTextParagraph = "Northampton’s home of crispy, golden, juicy, and packed with flavour.\u2028 Freshly made, always tasty."
 
@@ -122,7 +125,7 @@ class MainActivity : ComponentActivity() {
                 println(isLoggedIn)
                 println("User Role is:")
                 println(userRole)
-                if(isLoggedIn) {
+                if (isLoggedIn && userRole.isNotBlank()) {
                     when (userRole) {
                         "admin" -> ReusableButton("Let's Eat!", "admin-dashboard", 150, 57, navManager = navManager)
                         "customer" -> ReusableButton("Let's Eat!", "customer-dashboard", 150, 57, navManager = navManager)

@@ -53,9 +53,19 @@ import com.example.gracetastybites.ui.theme.SemiBoldLabelLarge
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminDashboardScreen(navManager: NavController, dbHelper: DatabaseHelper, sharedPreferences: SharedPreferences) {
+    println(sharedPreferences.getString("userRole", ""))
 
+//    if (!sharedPreferences.getBoolean("isLoggedIn", false) ||
+//        sharedPreferences.getString("userRole", "") != "admin") {
+//        navManager.navigate("login")
+//    }
     val bgCream = MaterialTheme.colorScheme.background
 
+    val context = LocalContext.current
+    val profilePicName = sharedPreferences.getString("profilePic", "") ?: ""
+    val drawableId = remember(profilePicName) {
+        context.resources.getIdentifier(profilePicName, "drawable", context.packageName)
+    }
 
     Column(
         modifier = Modifier
@@ -74,14 +84,18 @@ fun AdminDashboardScreen(navManager: NavController, dbHelper: DatabaseHelper, sh
                 modifier = Modifier
                     .weight(1f)
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.user),
+                if (drawableId != 0) {
+                    Image(
+                        painter = painterResource(id = drawableId),
                     contentDescription = "User",
                     modifier = Modifier
                         .width(44.dp)
                         .height(44.dp),
                     contentScale = ContentScale.Fit
                 )
+                } else {
+                    Text("No Image Found")
+                }
             }
             Box(
                 modifier = Modifier
@@ -107,13 +121,11 @@ fun AdminDashboardScreen(navManager: NavController, dbHelper: DatabaseHelper, sh
                 ) {
                 Button(onClick = {
                     val editor = sharedPreferences.edit()
-                    editor.apply({
-                        editor.remove("email")
-                        editor.remove("userRole")
-                        editor.putBoolean("isLoggedIn", false)
-                        apply()
-                    })
-                    navManager.navigate("home")
+                    editor.remove("email")
+                    editor.remove("userRole")
+                    editor.remove("isLoggedIn")
+                    editor.apply()
+                    navManager.navigate("login") // try by adding a backstackentry value login/{clearShared} and then in login clear sharePref one more time
                 }) {
                     Text(text = "Log out")
                 }

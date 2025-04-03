@@ -18,6 +18,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -34,7 +35,6 @@ import com.example.gracetastybites.logo.Logo
 
 // Import Mock up data base user login
 import com.example.gracetastybites.mockData.UserAuth
-import com.example.gracetastybites.mockData.tableUserAuth
 import com.example.gracetastybites.sqllite.DatabaseHelper
 import com.example.gracetastybites.ui.theme.LabelInput
 import com.example.gracetastybites.ui.theme.SemiBoldLabelLarge
@@ -42,36 +42,40 @@ import com.example.gracetastybites.ui.theme.SemiBoldLabelLarge
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(navManager: NavController, dbHelper: DatabaseHelper, sharedPreferences: SharedPreferences) {
+    val tableUserAuth = remember { mutableStateListOf<UserAuth>() }
+
+    println("test login ${sharedPreferences.getString("userRole", "")}")
 
     val bgCream = MaterialTheme.colorScheme.background
 
-    var username by remember { mutableStateOf("") };
+    var email by remember { mutableStateOf("") };
     var password by remember { mutableStateOf("") };
 
-    var wrongUsername by remember { mutableStateOf(false) };
+    var wrongEmail by remember { mutableStateOf(false) };
     var wrongPassword by remember { mutableStateOf(false) };
 
-    fun checkLoginDetails(username: String, password: String, databaseUser: List<UserAuth>): UserAuth? {
+    fun checkLoginDetails(email: String, password: String, databaseUser: List<UserAuth>): UserAuth? {
 
-        val matchedUser = databaseUser.find { it.username == username } //https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/find.html
+        val matchedUser = databaseUser.find { it.email == email } //https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/find.html
 
-        if(wrongUsername) {
-            wrongUsername = false
+        if(wrongEmail) {
+            wrongEmail = false
         }
 
         if(wrongPassword) {
             wrongPassword = false
         }
 
-        println("Test Invalid User - Debug as wrongUsername value is not going through when an invalid username entered.");
+        println("Test Invalid User - Debug as wrongEmail value is not going through when an invalid email entered.");
         println(matchedUser);
         if( matchedUser != null ) {
             if(password == matchedUser.password) {
 
                 val editor = sharedPreferences.edit()
-                editor.putString("email", username)
+                editor.putString("email", email)
                 editor.putBoolean("isLoggedIn", true)
                 editor.putString("userRole", matchedUser.role)
+                editor.putString("profilePic", matchedUser.profilePic)
                 editor.apply()
 
                 return matchedUser;
@@ -80,13 +84,15 @@ fun LoginScreen(navManager: NavController, dbHelper: DatabaseHelper, sharedPrefe
                 return null;
             }
         } else {
-            wrongUsername = true;
+            wrongEmail = true;
             return null;
         }
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().background(bgCream),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(bgCream),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -94,7 +100,9 @@ fun LoginScreen(navManager: NavController, dbHelper: DatabaseHelper, sharedPrefe
             Logo(200,200);
         }
         Row(
-            modifier = Modifier.fillMaxWidth(0.8f).padding(top = 36.dp),
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .padding(top = 36.dp),
             horizontalArrangement = Arrangement.Center
         ) {
             Text(text = "Hello",
@@ -104,7 +112,9 @@ fun LoginScreen(navManager: NavController, dbHelper: DatabaseHelper, sharedPrefe
             )
         }
         Row(
-            modifier = Modifier.fillMaxWidth(0.8f).padding(top = 24.dp),
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .padding(top = 24.dp),
             horizontalArrangement = Arrangement.Center
         ) {
             Text(text = "Login into your account to get some goodies",
@@ -114,7 +124,9 @@ fun LoginScreen(navManager: NavController, dbHelper: DatabaseHelper, sharedPrefe
             )
         }
         Row(
-            modifier = Modifier.fillMaxWidth(0.8f).padding(top = 36.dp),
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .padding(top = 36.dp),
             horizontalArrangement = Arrangement.Start
         ) {
             Text(text = "Email Address",
@@ -124,12 +136,14 @@ fun LoginScreen(navManager: NavController, dbHelper: DatabaseHelper, sharedPrefe
             )
         }
         Row(
-            modifier = Modifier.fillMaxWidth(0.8f).padding(top = 12.dp),
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .padding(top = 12.dp),
             horizontalArrangement = Arrangement.Start
         ) {
             TextField(
-                value = username,
-                onValueChange = { username = it },
+                value = email,
+                onValueChange = { email = it },
                 label = { Text(text ="Email Address",
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onBackground,
@@ -142,7 +156,9 @@ fun LoginScreen(navManager: NavController, dbHelper: DatabaseHelper, sharedPrefe
             )
         }
         Row(
-            modifier = Modifier.fillMaxWidth(0.8f).padding(top = 12.dp),
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .padding(top = 12.dp),
             horizontalArrangement = Arrangement.Start
         ) {
             TextField(
@@ -163,7 +179,9 @@ fun LoginScreen(navManager: NavController, dbHelper: DatabaseHelper, sharedPrefe
         }
 
         Row(
-            modifier = Modifier.fillMaxWidth(0.8f).padding(top = 12.dp),
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .padding(top = 12.dp),
             horizontalArrangement = Arrangement.End
         ) {
             Text(text = "Forgot Password",
@@ -176,11 +194,15 @@ fun LoginScreen(navManager: NavController, dbHelper: DatabaseHelper, sharedPrefe
         }
 
         Row(
-            modifier = Modifier.fillMaxWidth(0.8f).padding(top = 36.dp),
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .padding(top = 36.dp),
             horizontalArrangement = Arrangement.Center
         ) {
             ReusableButton("Login", "", 150, 57, navManager = navManager, otherCommands = {
-                var userDetails = checkLoginDetails(username, password, tableUserAuth);
+                tableUserAuth.clear()
+                tableUserAuth.addAll(dbHelper.getAllUsers())
+                val userDetails = checkLoginDetails(email, password, tableUserAuth);
 
 
                 println(userDetails);
@@ -200,9 +222,11 @@ fun LoginScreen(navManager: NavController, dbHelper: DatabaseHelper, sharedPrefe
             })
         }
 
-        if(wrongUsername) {
+        if(wrongEmail) {
             Row(
-                modifier = Modifier.fillMaxWidth(0.8f).padding(top = 36.dp),
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .padding(top = 36.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(text = "Wrong Username - Please try again",
@@ -212,7 +236,9 @@ fun LoginScreen(navManager: NavController, dbHelper: DatabaseHelper, sharedPrefe
         }
         if(wrongPassword) {
             Row(
-                modifier = Modifier.fillMaxWidth(0.8f).padding(top = 36.dp),
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .padding(top = 36.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(text = "Wrong Password - Please try again",
@@ -221,7 +247,9 @@ fun LoginScreen(navManager: NavController, dbHelper: DatabaseHelper, sharedPrefe
             }
         }
         Row(
-            modifier = Modifier.fillMaxWidth(0.8f).padding(top = 12.dp),
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .padding(top = 12.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.Bottom
         ) {
