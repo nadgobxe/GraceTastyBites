@@ -11,7 +11,7 @@ data class UserAuth(
 )
 
 val tableUserAuth = mutableListOf(
-    UserAuth(email = "one", password = "plm123", firstname= "Bogdan", lastname = "Burcea", position = "Cleaning", role= "admin", profilePic = "")
+    UserAuth(email = "one", password = "123", firstname= "Bogdan", lastname = "Burcea", position = "Cleaning", role= "admin", profilePic = "")
 )
 
 data class MenuList(

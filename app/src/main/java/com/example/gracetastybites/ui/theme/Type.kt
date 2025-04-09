@@ -24,7 +24,7 @@ val AppTypography = Typography(
     ),
     titleLarge = TextStyle(
         fontFamily = Roboto,
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.SemiBold,
         fontSize = 36.sp
     ),
     labelLarge = TextStyle(
@@ -49,6 +49,12 @@ val SemiBoldLabelLarge = TextStyle(
     fontFamily = Roboto,
     fontWeight = FontWeight.SemiBold,
     fontSize = 14.sp
+)
+
+val MediumRoboto16 = TextStyle(
+    fontFamily = Roboto,
+    fontWeight = FontWeight.Medium,
+    fontSize = 16.sp
 )
 
 //val Typography = Typography(

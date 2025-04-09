@@ -3,6 +3,7 @@ package com.example.gracetastybites.screens
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,9 +12,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -27,15 +35,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lint.kotlin.metadata.Visibility
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.gracetastybites.R
@@ -47,6 +60,7 @@ import com.example.gracetastybites.mockData.UserAuth
 import com.example.gracetastybites.mockData.tableUserAuth
 import com.example.gracetastybites.sqllite.DatabaseHelper
 import com.example.gracetastybites.ui.theme.LabelInput
+import com.example.gracetastybites.ui.theme.MediumRoboto16
 import com.example.gracetastybites.ui.theme.SemiBoldLabelLarge
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,9 +69,11 @@ fun SignUpScreen(navManager: NavController, dbHelper: DatabaseHelper) {
 
     val bgCream = MaterialTheme.colorScheme.background
 
-    var username by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
+    var isChecked by remember { mutableStateOf(false) }
 
     val passwordNoMatch = password != confirmPassword
 
@@ -106,6 +122,209 @@ fun SignUpScreen(navManager: NavController, dbHelper: DatabaseHelper) {
           }
         HorizontalDivider(thickness = 1.dp, color = Color(0x2F1B0C20))
 
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(top = 23.dp, start = 27.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "Welcome",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(top = 23.dp, start = 27.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "Please tell us about yourself.",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(top = 23.dp, start = 27.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "We won't share any of your personal data.",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(1f)
+                .padding(top = 110.dp, start = 30.dp, end = 50.dp),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            TextField(
+                value = email,
+                onValueChange = { email = it },
+                placeholder = {
+                    Text(
+                        text = "Email Address",
+                        style = TextStyle(fontWeight = FontWeight.Medium)
+                    )},
+                label = { Text(text ="Email Address1",
+                    style = LabelInput,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
+                    textAlign = TextAlign.Start)},
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    unfocusedIndicatorColor = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.16f),
+                    unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.16f),
+
+                ),
+                singleLine = true,
+                textStyle = TextStyle(fontWeight = FontWeight.Medium),
+                maxLines = 1
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(1f)
+                .padding(top = 12.dp, start = 30.dp, end = 50.dp),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            TextField(
+                value = password,
+                onValueChange = { password = it },
+                placeholder = {
+                    Text(
+                        text = "Password",
+                        style = TextStyle(fontWeight = FontWeight.Medium)
+                    )},
+                label = { Text(text ="Password",
+                    style = LabelInput,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
+                    textAlign = TextAlign.Start)},
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    unfocusedIndicatorColor = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.16f),
+                    unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.16f),
+                ),
+                singleLine = true,
+                textStyle = TextStyle(fontWeight = FontWeight.Medium),
+                trailingIcon = {
+                    if (passwordVisible) {
+                        IconButton(onClick = { passwordVisible = false }) {
+                            Icon(
+                                imageVector = Icons.Filled.Visibility,
+                                contentDescription = "hide_password"
+                            )
+                        }
+                    } else {
+                        IconButton(
+                            onClick = { passwordVisible = true }) {
+                            Icon(
+                                imageVector = Icons.Filled.VisibilityOff,
+                                contentDescription = "hide_password"
+                            )
+                        }
+                    }
+                },
+                isError = passwordNoMatch,
+                maxLines = 1,
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(), //https://alitalhacoban.medium.com/show-hide-password-jetpack-compose-d0c4abac568f
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(1f)
+                .padding(top = 12.dp, start = 30.dp, end = 50.dp),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            TextField(
+                value = confirmPassword,
+                onValueChange = { confirmPassword = it },
+                placeholder = {
+                    Text(
+                        text = "Confirm Password",
+                        style = TextStyle(fontWeight = FontWeight.Medium)
+                    )},
+                label = { Text(text ="Confirm Password",
+                    style = LabelInput,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
+                    textAlign = TextAlign.Start)},
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    unfocusedIndicatorColor = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.16f),
+                    unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.16f),
+                ),
+                singleLine = true,
+                trailingIcon = {
+                    if (passwordVisible) {
+                        IconButton(onClick = { passwordVisible = false }) {
+                            Icon(
+                                imageVector = Icons.Filled.Visibility,
+                                contentDescription = "hide_password"
+                            )
+                        }
+                    } else {
+                        IconButton(
+                            onClick = { passwordVisible = true }) {
+                            Icon(
+                                imageVector = Icons.Filled.VisibilityOff,
+                                contentDescription = "hide_password"
+                            )
+                        }
+                    }
+                },
+                maxLines = 1,
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(), //https://alitalhacoban.medium.com/show-hide-password-jetpack-compose-d0c4abac568f
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+            )
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(top = 20.dp)
+        ) {
+
+            Checkbox(
+                checked = isChecked,
+                onCheckedChange = { isChecked = it }
+            )
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Text(
+                text = "I agree to the Terms of Services & Privacy Policy",
+                style = MediumRoboto16,
+                modifier = Modifier.clickable {
+                    navManager.navigate("terms")
+                }
+            )
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(top = 95.dp)
+        ) {
+            ReusableButton("Sign Up","login", 158, 60, navManager)
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(1f)
+                .padding(top = 75.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.Bottom
+        ) {
+            Text(text = "Already have an account?",
+                style = MediumRoboto16,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Text(text = "Login",
+                style = MediumRoboto16,
+                color = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier.clickable {
+                    navManager.navigate("login")
+                }.padding(start = 4.dp)
+            )
+        }
     }
 }
 //Image(

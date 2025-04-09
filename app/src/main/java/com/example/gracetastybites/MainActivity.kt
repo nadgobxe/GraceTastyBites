@@ -79,6 +79,9 @@ class MainActivity : ComponentActivity() {
                     composable("sign-up") {
                         SignUpScreen(navManager, dbHelper)
                     }
+                    composable("terms") {
+                        Text("terms")
+                    }
                 }
             }
         }

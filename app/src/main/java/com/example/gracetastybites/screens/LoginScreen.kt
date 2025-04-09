@@ -37,6 +37,7 @@ import com.example.gracetastybites.logo.Logo
 import com.example.gracetastybites.mockData.UserAuth
 import com.example.gracetastybites.sqllite.DatabaseHelper
 import com.example.gracetastybites.ui.theme.LabelInput
+import com.example.gracetastybites.ui.theme.MediumRoboto16
 import com.example.gracetastybites.ui.theme.SemiBoldLabelLarge
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -249,16 +250,16 @@ fun LoginScreen(navManager: NavController, dbHelper: DatabaseHelper, sharedPrefe
         Row(
             modifier = Modifier
                 .fillMaxWidth(0.8f)
-                .padding(top = 12.dp),
+                .padding(top = 75.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.Bottom
         ) {
             Text(text = "Don't have an account?",
-                style = MaterialTheme.typography.labelLarge,
+                style = MediumRoboto16,
                 color = MaterialTheme.colorScheme.onBackground
             )
             Text(text = "Join Now!",
-                style = SemiBoldLabelLarge,
+                style = MediumRoboto16,
                 color = MaterialTheme.colorScheme.secondary,
                 modifier = Modifier.clickable {
                     navManager.navigate("sign-up")
