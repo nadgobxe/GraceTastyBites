@@ -1,5 +1,7 @@
 package com.example.gracetastybites.mockData
 
+import androidx.compose.ui.graphics.vector.ImageVector
+
 data class UserAuth(
     val email: String,
     val password: String,
@@ -10,9 +12,16 @@ data class UserAuth(
     val profilePic: String
 )
 
-val tableUserAuth = mutableListOf(
-    UserAuth(email = "one", password = "123", firstname= "Bogdan", lastname = "Burcea", position = "Cleaning", role= "admin", profilePic = "")
+data class QuickActionItem(
+    val title: String,
+    val subtitle: String? = null,
+    val icon: ImageVector,
+    val onClick: () -> Unit
 )
+
+//val tableUserAuth = mutableListOf(
+//    UserAuth(email = "one", password = "123", firstname= "Bogdan", lastname = "Burcea", position = "Cleaning", role= "admin", profilePic = "")
+//)
 
 data class MenuList(
     val name: String,

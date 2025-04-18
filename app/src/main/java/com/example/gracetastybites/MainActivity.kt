@@ -82,6 +82,21 @@ class MainActivity : ComponentActivity() {
                     composable("terms") {
                         Text("terms")
                     }
+                    composable("staff-role") {
+                        Text("staff-role")
+                    }
+                    composable("add-invoice") {
+                        Text("add-invoice")
+                    }
+                    composable("manage-shifts") {
+                        Text("manage-shifts")
+                    }
+                    composable("manage-menu") {
+                        Text("manage-menu")
+                    }
+                    composable("payroll") {
+                        Text("payroll")
+                    }
                 }
             }
         }

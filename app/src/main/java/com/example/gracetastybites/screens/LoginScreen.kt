@@ -52,13 +52,19 @@ fun LoginScreen(navManager: NavController, dbHelper: DatabaseHelper, sharedPrefe
     var email by remember { mutableStateOf("") };
     var password by remember { mutableStateOf("") };
 
+    var firstname by remember { mutableStateOf("") }
+
     var wrongEmail by remember { mutableStateOf(false) };
     var wrongPassword by remember { mutableStateOf(false) };
 
     fun checkLoginDetails(email: String, password: String, databaseUser: List<UserAuth>): UserAuth? {
 
         val matchedUser = databaseUser.find { it.email == email } //https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/find.html
-
+//        println("Hello, this is the return value of matchedUser --- let's see how we can extract it's nmae$matchedUser")
+        if (matchedUser != null) {
+            firstname = matchedUser.firstname
+//            println("Matched User firstname is $firstname")
+        }
         if(wrongEmail) {
             wrongEmail = false
         }
@@ -74,6 +80,7 @@ fun LoginScreen(navManager: NavController, dbHelper: DatabaseHelper, sharedPrefe
 
                 val editor = sharedPreferences.edit()
                 editor.putString("email", email)
+                editor.putString("firstname", firstname)
                 editor.putBoolean("isLoggedIn", true)
                 editor.putString("userRole", matchedUser.role)
                 editor.putString("profilePic", matchedUser.profilePic)

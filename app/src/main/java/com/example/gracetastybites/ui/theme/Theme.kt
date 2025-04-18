@@ -27,7 +27,7 @@ private val LightColorScheme = lightColorScheme(
     onSecondary = DarkBrownText,
     onBackground = DarkBrownText,
     onSurface = DarkBrownText,
-
+    onTertiary = TomatoButton,
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),

@@ -1,6 +1,7 @@
 package com.example.gracetastybites.screens
 
 import android.graphics.drawable.Drawable
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -32,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,11 +59,11 @@ import com.example.gracetastybites.logo.Logo
 
 // Import Mock up data base user login
 import com.example.gracetastybites.mockData.UserAuth
-import com.example.gracetastybites.mockData.tableUserAuth
 import com.example.gracetastybites.sqllite.DatabaseHelper
 import com.example.gracetastybites.ui.theme.LabelInput
 import com.example.gracetastybites.ui.theme.MediumRoboto16
 import com.example.gracetastybites.ui.theme.SemiBoldLabelLarge
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,13 +71,29 @@ fun SignUpScreen(navManager: NavController, dbHelper: DatabaseHelper) {
 
     val bgCream = MaterialTheme.colorScheme.background
 
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
+    var confirmPassword by rememberSaveable { mutableStateOf("") }
+    var firstname by rememberSaveable { mutableStateOf("") }
+    var lastname by rememberSaveable { mutableStateOf("") }
+    var passwordVisible by rememberSaveable { mutableStateOf(false) }
     var isChecked by remember { mutableStateOf(false) }
 
     val passwordNoMatch = password != confirmPassword
+
+    val newUser = UserAuth(
+        email = email,
+        password = password,
+        firstname = firstname,
+        lastname = lastname,
+        position = "Not Assigned",
+        role = "staff",
+        profilePic = "",
+    )
+    val context = LocalContext.current
+
+    val db = DatabaseHelper(context)
+
 
     Column(
         modifier = Modifier
@@ -155,7 +173,7 @@ fun SignUpScreen(navManager: NavController, dbHelper: DatabaseHelper) {
         Row(
             modifier = Modifier
                 .fillMaxWidth(1f)
-                .padding(top = 110.dp, start = 30.dp, end = 50.dp),
+                .padding(top = 36.dp, start = 30.dp, end = 50.dp),
             horizontalArrangement = Arrangement.Start
         ) {
             TextField(
@@ -177,6 +195,66 @@ fun SignUpScreen(navManager: NavController, dbHelper: DatabaseHelper) {
                     unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.16f),
 
                 ),
+                singleLine = true,
+                textStyle = TextStyle(fontWeight = FontWeight.Medium),
+                maxLines = 1
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(1f)
+                .padding(top = 12.dp, start = 30.dp, end = 50.dp),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            TextField(
+                value = firstname,
+                onValueChange = { firstname = it },
+                placeholder = {
+                    Text(
+                        text = "Firstname",
+                        style = TextStyle(fontWeight = FontWeight.Medium)
+                    )},
+                label = { Text(text ="Firstname",
+                    style = LabelInput,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
+                    textAlign = TextAlign.Start)},
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    unfocusedIndicatorColor = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.16f),
+                    unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.16f),
+
+                    ),
+                singleLine = true,
+                textStyle = TextStyle(fontWeight = FontWeight.Medium),
+                maxLines = 1
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(1f)
+                .padding(top = 12.dp, start = 30.dp, end = 50.dp),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            TextField(
+                value = lastname,
+                onValueChange = { lastname = it },
+                placeholder = {
+                    Text(
+                        text = "Lastname",
+                        style = TextStyle(fontWeight = FontWeight.Medium)
+                    )},
+                label = { Text(text ="Lastname",
+                    style = LabelInput,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
+                    textAlign = TextAlign.Start)},
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    unfocusedIndicatorColor = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.16f),
+                    unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.16f),
+
+                    ),
                 singleLine = true,
                 textStyle = TextStyle(fontWeight = FontWeight.Medium),
                 maxLines = 1
@@ -302,14 +380,25 @@ fun SignUpScreen(navManager: NavController, dbHelper: DatabaseHelper) {
         }
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(top = 95.dp)
+            modifier = Modifier.padding(top = 36.dp)
         ) {
-            ReusableButton("Sign Up","login", 158, 60, navManager)
+
+            ReusableButton("Sign Up","login", 158, 60, navManager, otherCommands = {
+                val rowId = db.insertUser(newUser)
+                println(rowId)
+                if (rowId > 0) {
+                    Toast.makeText(context, "User added successfully!", Toast.LENGTH_SHORT).show()
+                    navManager.navigate("login");
+                } else {
+                    Toast.makeText(context, "Failed to add user.", Toast.LENGTH_SHORT).show()
+                }
+
+            })
         }
         Row(
             modifier = Modifier
                 .fillMaxWidth(1f)
-                .padding(top = 75.dp),
+                .padding(top = 36.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.Bottom
         ) {

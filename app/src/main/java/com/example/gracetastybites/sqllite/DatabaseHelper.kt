@@ -12,13 +12,13 @@ class DatabaseHelper(context: Context) :
 
     companion object {
         private const val DATABASE_NAME = "graceTastyBitesDB"
-        private const val DATABASE_VERSION = 1
+        private const val DATABASE_VERSION = 2
         const val TABLE_STAFF = "staff"
         const val COL_ID = "id"
         const val COL_EMAIL = "email"
         const val COL_PASSWORD = "password"
-        const val COL_FIRST_NAME = "first_name"
-        const val COL_LAST_NAME = "last_name"
+        const val COL_FIRST_NAME = "firstname"
+        const val COL_LAST_NAME = "lastname"
         const val COL_ROLE = "role"
         const val COL_POSITION = "position"
         const val COL_PROFILE_PIC = "profile_pic"
