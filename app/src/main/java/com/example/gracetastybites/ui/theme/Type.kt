@@ -57,6 +57,12 @@ val MediumRoboto16 = TextStyle(
     fontSize = 16.sp
 )
 
+val SmallRoboto10 = TextStyle(
+    fontFamily = Roboto,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 10.sp
+)
+
 //val Typography = Typography(
 //    bodyLarge = TextStyle(
 //        fontFamily = FontFamily.Default,

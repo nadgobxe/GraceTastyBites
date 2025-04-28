@@ -1,7 +1,6 @@
 package com.example.gracetastybites.screens
 
 import android.content.SharedPreferences
-import android.graphics.drawable.Drawable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,27 +15,25 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Event
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material.icons.filled.Newspaper
+import androidx.compose.material.icons.filled.Paid
 import androidx.compose.material.icons.filled.PersonAdd
+import androidx.compose.material.icons.filled.PersonSearch
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,26 +42,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.gracetastybites.R
-import com.example.gracetastybites.button.ReusableButton
-import com.example.gracetastybites.logo.Logo
+import com.example.gracetastybites.mockData.MenuList
 import com.example.gracetastybites.mockData.QuickActionItem
 
 // Import Mock up data base user login
-import com.example.gracetastybites.mockData.UserAuth
 //import com.example.gracetastybites.mockData.tableUserAuth
 import com.example.gracetastybites.sqllite.DatabaseHelper
-import com.example.gracetastybites.ui.theme.LabelInput
 import com.example.gracetastybites.ui.theme.SemiBoldLabelLarge
+import com.example.gracetastybites.navigationBar.NavigationBar
+import com.example.gracetastybites.mockData.NavBarItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -89,6 +78,17 @@ fun AdminDashboardScreen(navManager: NavController, dbHelper: DatabaseHelper, sh
         QuickActionItem("Add Invoice", "Payroll", Icons.Default.Add, onClick = {navManager.navigate("add-invoice")}),
         QuickActionItem("Manage Shifts", "", Icons.Default.Event, onClick = {navManager.navigate("manage-shifts")}),
         QuickActionItem("Manage Menu", "", Icons.AutoMirrored.Filled.MenuBook, onClick = {navManager.navigate("manage-menu")}),
+    )
+
+    val adminNavBarItems = listOf(
+        NavBarItem("Home", Icons.Default.Home, onClick = {
+            navManager.navigate("admin-dashboard")
+            println("test if my logic works")}),
+        NavBarItem("Employees", Icons.Default.PersonSearch, onClick = {navManager.navigate("admin-dashboard")}),
+        NavBarItem("Invoice", Icons.Default.Newspaper, onClick = {navManager.navigate("admin-dashboard")}),
+        NavBarItem("Shifts", Icons.Default.CalendarMonth, onClick = {navManager.navigate("admin-dashboard")}),
+        NavBarItem("Menus", Icons.Default.MenuBook, onClick = {navManager.navigate("admin-dashboard")}),
+        NavBarItem("Payroll", Icons.Default.Paid, onClick = {navManager.navigate("admin-dashboard")}),
     )
 
     Column(
@@ -222,17 +222,18 @@ fun AdminDashboardScreen(navManager: NavController, dbHelper: DatabaseHelper, sh
                     color = MaterialTheme.colorScheme.background,
                     style = MaterialTheme.typography.titleMedium)
             } }
+        Spacer(modifier = Modifier.weight(1f))
 
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            NavigationBar(navManager, adminNavBarItems)
+        }
     }
 }
-//Image(
-//painter = painterResource(id = R.drawable.logo),
-//contentDescription = "Grace Tasty Bites Logo",
-//modifier = Modifier
-//.width(sizeWidth.dp)
-//.height(sizeHeight.dp),
-//contentScale = ContentScale.Fit
-//)
+
 
 @Composable
 fun QuickActionItemCard(item: QuickActionItem) {
@@ -270,5 +271,14 @@ fun QuickActionItemCard(item: QuickActionItem) {
                     color = MaterialTheme.colorScheme.background)
             }
         }
+    }
+}
+
+@Composable
+fun MenuItemCard (item: MenuList) {
+    Column (
+        modifier = Modifier.width(200.dp).height(240.dp)
+    ) {
+//        Image()
     }
 }

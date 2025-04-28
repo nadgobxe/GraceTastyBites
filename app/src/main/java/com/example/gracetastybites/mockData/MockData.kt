@@ -1,5 +1,10 @@
 package com.example.gracetastybites.mockData
 
+import android.graphics.drawable.Drawable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Newspaper
+import androidx.compose.material.icons.filled.PersonSearch
 import androidx.compose.ui.graphics.vector.ImageVector
 
 data class UserAuth(
@@ -29,3 +34,11 @@ data class MenuList(
     val category: String,
     val picture: String
 )
+
+data class NavBarItem(
+    val title: String,
+    val icon: ImageVector,
+    val onClick: () -> Unit
+)
+
+
