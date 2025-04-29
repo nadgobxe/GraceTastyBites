@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
@@ -54,6 +56,7 @@ import com.example.gracetastybites.sqllite.DatabaseHelper
 import com.example.gracetastybites.ui.theme.SemiBoldLabelLarge
 import com.example.gracetastybites.navigationBar.NavigationBar
 import com.example.gracetastybites.mockData.NavBarItem
+import com.example.gracetastybites.ui.theme.LabelInput
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,7 +78,7 @@ fun AdminDashboardScreen(navManager: NavController, dbHelper: DatabaseHelper, sh
 
     }
 
-    val drawableIdTest = context.resources.getIdentifier("big_stack_burger".toString(), "drawable", context.packageName)
+    val drawableIdTest = context.resources.getIdentifier("chicken_nuggets".toString(), "drawable", context.packageName)
     println("I test the image id $drawableIdTest")
 
     val menuItems = listOf(
@@ -95,6 +98,9 @@ fun AdminDashboardScreen(navManager: NavController, dbHelper: DatabaseHelper, sh
         NavBarItem("Menus", Icons.Default.MenuBook, onClick = {navManager.navigate("admin-dashboard")}),
         NavBarItem("Payroll", Icons.Default.Paid, onClick = {navManager.navigate("admin-dashboard")}),
     )
+
+    val menuFoodList = remember { dbHelper.getAllMenuItems() }
+
 
     Column(
         modifier = Modifier
@@ -232,6 +238,33 @@ fun AdminDashboardScreen(navManager: NavController, dbHelper: DatabaseHelper, sh
                     color = MaterialTheme.colorScheme.background,
                     style = MaterialTheme.typography.titleMedium)
             } }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 40.dp, start = 20.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
+        ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(text = "Menu",
+                    style = MaterialTheme.typography.bodyLarge)
+                Row() {
+                    LazyRow(
+                        contentPadding = PaddingValues(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(menuFoodList) { item ->
+                            MenuItemCard(item)
+                        }
+                    }
+
+                }
+
+            }
+
+        }
+
+
         Spacer(modifier = Modifier.weight(1f))
 
         Row(
@@ -289,23 +322,56 @@ fun QuickActionItemCard(item: QuickActionItem) {
 
 @Composable
 fun MenuItemCard (item: MenuList) {
-    Column (
-        modifier = Modifier
-            .width(200.dp)
-            .height(240.dp)
-    ) {
-        Image(
-            painter = painterResource(id = item.picture),
-            contentDescription = "Item Food",
+    Box(modifier = Modifier.padding(5.dp)) {
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(150.dp),
-            contentScale = ContentScale.Crop
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(text = item.name, style = MaterialTheme.typography.titleMedium)
-        Text(text = item.price, style = MaterialTheme.typography.bodyMedium)
-        Text(text = item.category, style = MaterialTheme.typography.bodySmall)
+                .width(200.dp)
+                .height(240.dp)
+                .clip(shape = RoundedCornerShape(20.dp))
+                .background(MaterialTheme.colorScheme.secondary)
+        ) {
+            Image(
+                painter = painterResource(id = item.picture),
+                contentDescription = "Item Food",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp),
+                contentScale = ContentScale.Crop
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.padding(top = 10.dp, start = 15.dp, end = 15.dp, bottom = 10.dp).fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
 
+            ) {
+                Text(text = item.name, style = SemiBoldLabelLarge)
+                Text(text = item.price, style = SemiBoldLabelLarge)
+            }
+
+            Row(
+                modifier = Modifier.padding(start = 15.dp, end = 15.dp).fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+
+            ) {
+                Text(text = "Category", style = LabelInput, color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f))
+                Text(text = item.category, style = LabelInput, color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f))
+            }
+
+            Row(
+                modifier = Modifier
+                    .padding(start = 15.dp, end = 15.dp, top = 10.dp)
+                    .fillMaxWidth()
+                    .width(170.dp)
+                    .height(4.dp)
+                    .clip(shape = RoundedCornerShape(20.dp))
+                    .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f)),
+                horizontalArrangement = Arrangement.SpaceBetween
+
+            ) {
+                Row(modifier = Modifier.weight(0.5f).width(85.dp).height(4.dp).clip(shape = RoundedCornerShape(20.dp)).background(MaterialTheme.colorScheme.onTertiary)) {}
+                Row(modifier = Modifier.weight(0.5f).width(85.dp).height(4.dp).clip(shape = RoundedCornerShape(20.dp))) {}
+            }
+
+        }
     }
 }

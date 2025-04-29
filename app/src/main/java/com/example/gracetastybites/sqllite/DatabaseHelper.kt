@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.example.gracetastybites.mockData.MenuList
 import com.example.gracetastybites.mockData.UserAuth
 
 class DatabaseHelper(context: Context) :
@@ -12,7 +13,9 @@ class DatabaseHelper(context: Context) :
 
     companion object {
         private const val DATABASE_NAME = "graceTastyBitesDB"
-        private const val DATABASE_VERSION = 2
+        private const val DATABASE_VERSION = 4
+
+        //staff table
         const val TABLE_STAFF = "staff"
         const val COL_ID = "id"
         const val COL_EMAIL = "email"
@@ -22,6 +25,16 @@ class DatabaseHelper(context: Context) :
         const val COL_ROLE = "role"
         const val COL_POSITION = "position"
         const val COL_PROFILE_PIC = "profile_pic"
+
+        //menu list items
+        const val TABLE_MENU_LIST_ITEMS = "menu_list_items"
+        const val COL_MLI_ID = "id"
+        const val COL_MLI_NAME = "name"
+        const val COL_MLI_PRICE = "price"
+        const val COL_MLI_CATEGORY = "category"
+        const val COL_MLI_PICTURE = "picture"
+        const val COL_MLI_DESCRIPTION = "description"
+
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
@@ -30,11 +43,43 @@ class DatabaseHelper(context: Context) :
                     "$COL_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "$COL_FIRST_NAME TEXT, $COL_LAST_NAME TEXT, $COL_EMAIL TEXT, " +
                     "$COL_PASSWORD TEXT, $COL_ROLE TEXT, $COL_POSITION TEXT, $COL_PROFILE_PIC TEXT)"
-        db?.execSQL(createTableQuery)
+
+
+        val createMLITableQuery =
+            "CREATE TABLE $TABLE_MENU_LIST_ITEMS (" +
+                    "$COL_MLI_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "$COL_MLI_NAME TEXT, $COL_MLI_CATEGORY TEXT, $COL_MLI_PRICE TEXT, $COL_MLI_DESCRIPTION TEXT, $COL_MLI_PICTURE INTEGER)"
+
+            db?.execSQL(createTableQuery)
+            db?.execSQL(createMLITableQuery)
+
+        val insertDefaultStaffQuery =
+            "INSERT INTO $TABLE_STAFF (" +
+                    "$COL_FIRST_NAME, $COL_LAST_NAME, $COL_EMAIL, $COL_PASSWORD, " +
+                    "$COL_ROLE, $COL_POSITION, $COL_PROFILE_PIC) VALUES (" +
+                    "'Bogdan', 'Burcea', 'grandpoke@live.co.uk', 'plm123', " +
+                    "'admin', 'CEO', '')"
+
+        db?.execSQL(insertDefaultStaffQuery)
+
+
+        val insertMenuItems = listOf(
+            "INSERT INTO $TABLE_MENU_LIST_ITEMS ($COL_MLI_NAME, $COL_MLI_CATEGORY, $COL_MLI_PRICE, $COL_MLI_DESCRIPTION, $COL_MLI_PICTURE) " +
+                    "VALUES ('Big Stack Burger', 'Burgers', '£12.50', 'Delicious double patty burger', 2130968605);",
+            "INSERT INTO $TABLE_MENU_LIST_ITEMS ($COL_MLI_NAME, $COL_MLI_CATEGORY, $COL_MLI_PRICE, $COL_MLI_DESCRIPTION, $COL_MLI_PICTURE) " +
+                    "VALUES ('Chicken Bones', 'Chicken', '£9.50', 'Juicy chicken wings', 2130968606);",
+            "INSERT INTO $TABLE_MENU_LIST_ITEMS ($COL_MLI_NAME, $COL_MLI_CATEGORY, $COL_MLI_PRICE, $COL_MLI_DESCRIPTION, $COL_MLI_PICTURE) " +
+                    "VALUES ('Chicken Nuggets', 'Chicken', '£4.50', 'Crispy chicken nuggets', 2130968607);"
+        )
+
+        insertMenuItems.forEach { query ->
+            db?.execSQL(query)
+        }
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         db?.execSQL("DROP TABLE IF EXISTS $TABLE_STAFF")
+        db?.execSQL("DROP TABLE IF EXISTS $TABLE_MENU_LIST_ITEMS")
         onCreate(db)
     }
 
@@ -79,4 +124,66 @@ class DatabaseHelper(context: Context) :
         val db = this.writableDatabase
         return db.delete(TABLE_STAFF, "$COL_ID=?", arrayOf(id.toString()))
     }
+
+
+    fun insertMenuItem(menuItem: MenuList): Long {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(COL_MLI_NAME, menuItem.name)
+            put(COL_MLI_PRICE, menuItem.price)
+            put(COL_MLI_CATEGORY, menuItem.category)
+            put(COL_MLI_PICTURE, menuItem.picture)
+        }
+        return db.insert(TABLE_MENU_LIST_ITEMS, null, values)
+    }
+
+    fun getAllMenuItems(): List<MenuList> {
+        val menuItemsList = mutableListOf<MenuList>()
+        val db = this.readableDatabase
+        val cursor: Cursor = db.rawQuery("SELECT * FROM $TABLE_MENU_LIST_ITEMS", null)
+
+        if (cursor.moveToFirst()) {
+            do {
+                val menuItem = MenuList(
+                    name = cursor.getString(cursor.getColumnIndexOrThrow(COL_MLI_NAME)),
+                    price = cursor.getString(cursor.getColumnIndexOrThrow(COL_MLI_PRICE)),
+                    category = cursor.getString(cursor.getColumnIndexOrThrow(COL_MLI_CATEGORY)),
+                    picture = cursor.getInt(cursor.getColumnIndexOrThrow(COL_MLI_PICTURE))
+                )
+                menuItemsList.add(menuItem)
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        return menuItemsList
+    }
+
+    fun getMenuItemsByCategory(category: String): List<MenuList> {
+        val menuItemsList = mutableListOf<MenuList>()
+        val db = this.readableDatabase
+
+        val cursor: Cursor = db.rawQuery("SELECT * FROM $TABLE_MENU_LIST_ITEMS WHERE $COL_MLI_CATEGORY = '$category'", null )
+        if (cursor.moveToFirst()) {
+            do {
+                val menuItem = MenuList(
+                    name = cursor.getString(cursor.getColumnIndexOrThrow(COL_MLI_NAME)),
+                    price = cursor.getString(cursor.getColumnIndexOrThrow(COL_MLI_PRICE)),
+                    category = cursor.getString(cursor.getColumnIndexOrThrow(COL_MLI_CATEGORY)),
+                    picture = cursor.getInt(cursor.getColumnIndexOrThrow(COL_MLI_PICTURE))
+                )
+                menuItemsList.add(menuItem)
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        return menuItemsList
+    }
+
+    fun deleteMenuItemById(id: Int): Int {
+        val db = this.writableDatabase
+        return db.delete(TABLE_MENU_LIST_ITEMS, "$COL_MLI_ID=?", arrayOf(id.toString()))
+    }
+
+
 }
+
