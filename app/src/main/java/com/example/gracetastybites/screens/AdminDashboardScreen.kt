@@ -66,12 +66,17 @@ fun AdminDashboardScreen(navManager: NavController, dbHelper: DatabaseHelper, sh
 //    }
     val bgCream = MaterialTheme.colorScheme.background
 
+
+
     val context = LocalContext.current
     val profilePicName = sharedPreferences.getString("profilePic", "") ?: ""
     val drawableId = remember(profilePicName) {
         context.resources.getIdentifier(profilePicName, "drawable", context.packageName)
 
     }
+
+    val drawableIdTest = context.resources.getIdentifier("big_stack_burger".toString(), "drawable", context.packageName)
+    println("I test the image id $drawableIdTest")
 
     val menuItems = listOf(
         QuickActionItem("Staff & Role", "Management", Icons.Default.PersonAdd, onClick = {navManager.navigate("staff-role")}),
@@ -106,7 +111,8 @@ fun AdminDashboardScreen(navManager: NavController, dbHelper: DatabaseHelper, sh
         ) {
             Box(
                 modifier = Modifier
-                    .weight(0.65f).padding(start = 21.dp)
+                    .weight(0.65f)
+                    .padding(start = 21.dp)
             ) {
                 if (drawableId != 0) {
                     Image(
@@ -153,7 +159,8 @@ fun AdminDashboardScreen(navManager: NavController, dbHelper: DatabaseHelper, sh
             }
             Box(
                 modifier = Modifier
-                    .weight(0.65f).padding(end = 21.dp),
+                    .weight(0.65f)
+                    .padding(end = 21.dp),
                 contentAlignment = Alignment.CenterEnd,
 
                 ) {
@@ -211,7 +218,10 @@ fun AdminDashboardScreen(navManager: NavController, dbHelper: DatabaseHelper, sh
                     .clip(RoundedCornerShape(50.dp))
                     .background(
                         brush = Brush.verticalGradient(
-                            listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.onTertiary)
+                            listOf(
+                                MaterialTheme.colorScheme.primary,
+                                MaterialTheme.colorScheme.onTertiary
+                            )
                         )
                     )
                     .padding(16.dp)
@@ -246,7 +256,10 @@ fun QuickActionItemCard(item: QuickActionItem) {
                 .clip(RoundedCornerShape(12.dp))
                 .background(
                     brush = Brush.verticalGradient(
-                        listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.onTertiary)
+                        listOf(
+                            MaterialTheme.colorScheme.primary,
+                            MaterialTheme.colorScheme.onTertiary
+                        )
                     )
                 )
                 .padding(16.dp)
@@ -277,8 +290,22 @@ fun QuickActionItemCard(item: QuickActionItem) {
 @Composable
 fun MenuItemCard (item: MenuList) {
     Column (
-        modifier = Modifier.width(200.dp).height(240.dp)
+        modifier = Modifier
+            .width(200.dp)
+            .height(240.dp)
     ) {
-//        Image()
+        Image(
+            painter = painterResource(id = item.picture),
+            contentDescription = "Item Food",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(150.dp),
+            contentScale = ContentScale.Crop
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(text = item.name, style = MaterialTheme.typography.titleMedium)
+        Text(text = item.price, style = MaterialTheme.typography.bodyMedium)
+        Text(text = item.category, style = MaterialTheme.typography.bodySmall)
+
     }
 }

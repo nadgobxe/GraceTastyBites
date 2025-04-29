@@ -32,7 +32,7 @@ data class MenuList(
     val name: String,
     val price: String,
     val category: String,
-    val picture: String
+    val picture: Int
 )
 
 data class NavBarItem(
