@@ -73,6 +73,9 @@ class MainActivity : ComponentActivity() {
                     composable("admin-dashboard") {
                         AdminDashboardScreen(navManager, dbHelper, sharedPreferences)
                     }
+                    composable("staff-dashboard") {
+                        AdminDashboardScreen(navManager, dbHelper, sharedPreferences)
+                    }
                     composable("forgot-password") {
                         Text("Forgot my password")
                     }
