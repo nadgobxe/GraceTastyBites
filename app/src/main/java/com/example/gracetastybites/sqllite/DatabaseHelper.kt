@@ -1,5 +1,6 @@
 package com.example.gracetastybites.sqllite
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
@@ -13,7 +14,7 @@ class DatabaseHelper(context: Context) :
 
     companion object {
         private const val DATABASE_NAME = "graceTastyBitesDB"
-        private const val DATABASE_VERSION = 4
+        private const val DATABASE_VERSION = 6
 
         //staff table
         const val TABLE_STAFF = "staff"
@@ -37,6 +38,7 @@ class DatabaseHelper(context: Context) :
 
     }
 
+    @SuppressLint("SuspiciousIndentation")
     override fun onCreate(db: SQLiteDatabase?) {
         val createTableQuery =
             "CREATE TABLE $TABLE_STAFF (" +
@@ -53,14 +55,45 @@ class DatabaseHelper(context: Context) :
             db?.execSQL(createTableQuery)
             db?.execSQL(createMLITableQuery)
 
-        val insertDefaultStaffQuery =
+        val insertDefaultStaffQuery = listOf(
             "INSERT INTO $TABLE_STAFF (" +
                     "$COL_FIRST_NAME, $COL_LAST_NAME, $COL_EMAIL, $COL_PASSWORD, " +
                     "$COL_ROLE, $COL_POSITION, $COL_PROFILE_PIC) VALUES (" +
                     "'Bogdan', 'Burcea', 'grandpoke@live.co.uk', 'plm123', " +
-                    "'admin', 'CEO', '')"
+                    "'admin', 'admin', '')",
+            "INSERT INTO $TABLE_STAFF (" +
+                    "$COL_FIRST_NAME, $COL_LAST_NAME, $COL_EMAIL, $COL_PASSWORD, " +
+                    "$COL_ROLE, $COL_POSITION, $COL_PROFILE_PIC) VALUES (" +
+                    "'Adrian', 'Wall', 'adrian@aa.com', 'plm123', " +
+                    "'staff', 'waiter', '')",
+            "INSERT INTO $TABLE_STAFF (" +
+                    "$COL_FIRST_NAME, $COL_LAST_NAME, $COL_EMAIL, $COL_PASSWORD, " +
+                    "$COL_ROLE, $COL_POSITION, $COL_PROFILE_PIC) VALUES (" +
+                    "'Carla', 'Stockes', 'carla@aa.com', 'plm123', " +
+                    "'staff', 'chief', '')",
+            "INSERT INTO $TABLE_STAFF (" +
+                    "$COL_FIRST_NAME, $COL_LAST_NAME, $COL_EMAIL, $COL_PASSWORD, " +
+                    "$COL_ROLE, $COL_POSITION, $COL_PROFILE_PIC) VALUES (" +
+                    "'Tracy', 'Mark', 'tracy@aa.com', 'plm123', " +
+                    "'staff', 'manager', '')",
+            "INSERT INTO $TABLE_STAFF (" +
+                    "$COL_FIRST_NAME, $COL_LAST_NAME, $COL_EMAIL, $COL_PASSWORD, " +
+                    "$COL_ROLE, $COL_POSITION, $COL_PROFILE_PIC) VALUES (" +
+                    "'Laura', 'Unit', 'laura@aa.com', 'plm123', " +
+                    "'staff', 'cashier', '')",
+            "INSERT INTO $TABLE_STAFF (" +
+                    "$COL_FIRST_NAME, $COL_LAST_NAME, $COL_EMAIL, $COL_PASSWORD, " +
+                    "$COL_ROLE, $COL_POSITION, $COL_PROFILE_PIC) VALUES (" +
+                    "'Susan', 'Ashley', 'susan@aa.com', 'plm123', " +
+                    "'staff', 'waiter', '')",
+            "INSERT INTO $TABLE_STAFF (" +
+                    "$COL_FIRST_NAME, $COL_LAST_NAME, $COL_EMAIL, $COL_PASSWORD, " +
+                    "$COL_ROLE, $COL_POSITION, $COL_PROFILE_PIC) VALUES (" +
+                    "'John', 'Wayne', 'john@aa.com', 'plm123', " +
+                    "'staff', 'chief', '')"
+        )
 
-        db?.execSQL(insertDefaultStaffQuery)
+        insertDefaultStaffQuery.forEach {query -> db?.execSQL(query)}
 
 
         val insertMenuItems = listOf(

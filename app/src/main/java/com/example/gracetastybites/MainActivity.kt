@@ -42,6 +42,8 @@ import com.example.gracetastybites.screens.LoginScreen
 import com.example.gracetastybites.screens.SignUpScreen
 import com.example.gracetastybites.screens.AdminDashboardScreen
 import com.example.gracetastybites.screens.Terms
+import com.example.gracetastybites.screens.admin.AdminStuffAndRole
+import com.example.gracetastybites.screens.admin.AddEmployee
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,9 +88,18 @@ class MainActivity : ComponentActivity() {
                     composable("terms") {
                         Terms(navManager)
                     }
+                    //Admin Routes
                     composable("staff-role") {
-                        Text("staff-role")
+                        AdminStuffAndRole(navManager,dbHelper, sharedPreferences)
                     }
+                    composable("view-user") {
+                        Text("view-user")
+                    }
+
+                    composable("add-employee") {
+                        AddEmployee(navManager,dbHelper, sharedPreferences)
+                    }
+
                     composable("add-invoice") {
                         Text("add-invoice")
                     }

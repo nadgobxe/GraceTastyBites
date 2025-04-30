@@ -75,11 +75,11 @@ fun AdminDashboardScreen(navManager: NavController, dbHelper: DatabaseHelper, sh
     val profilePicName = sharedPreferences.getString("profilePic", "") ?: ""
     val drawableId = remember(profilePicName) {
         context.resources.getIdentifier(profilePicName, "drawable", context.packageName)
-
     }
+// debug - extract image id for pre-design
+//    val drawableIdTest = context.resources.getIdentifier("chicken_nuggets".toString(), "drawable", context.packageName)
+//    println("I test the image id $drawableIdTest")
 
-    val drawableIdTest = context.resources.getIdentifier("chicken_nuggets".toString(), "drawable", context.packageName)
-    println("I test the image id $drawableIdTest")
 
     val menuItems = listOf(
         QuickActionItem("Staff & Role", "Management", Icons.Default.PersonAdd, onClick = {navManager.navigate("staff-role")}),
