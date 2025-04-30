@@ -41,6 +41,7 @@ import com.example.gracetastybites.sqllite.DatabaseHelper
 import com.example.gracetastybites.screens.LoginScreen
 import com.example.gracetastybites.screens.SignUpScreen
 import com.example.gracetastybites.screens.AdminDashboardScreen
+import com.example.gracetastybites.screens.Terms
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,7 +84,7 @@ class MainActivity : ComponentActivity() {
                         SignUpScreen(navManager, dbHelper)
                     }
                     composable("terms") {
-                        Text("terms")
+                        Terms(navManager)
                     }
                     composable("staff-role") {
                         Text("staff-role")

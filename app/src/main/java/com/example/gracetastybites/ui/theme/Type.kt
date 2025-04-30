@@ -15,7 +15,6 @@ val Roboto = FontFamily(
     Font(R.font.roboto_bold, FontWeight.Bold),
     Font(R.font.roboto_semibold, FontWeight.SemiBold)
 )
-
 val AppTypography = Typography(
     bodyLarge = TextStyle(
         fontFamily = Roboto,
@@ -61,6 +60,12 @@ val SmallRoboto10 = TextStyle(
     fontFamily = Roboto,
     fontWeight = FontWeight.SemiBold,
     fontSize = 10.sp
+)
+
+val Roboto24 = TextStyle(
+    fontFamily = Roboto,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 24.sp
 )
 
 //val Typography = Typography(
