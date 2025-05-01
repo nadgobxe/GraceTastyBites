@@ -27,18 +27,22 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.NavigateNext
 import androidx.compose.material.icons.filled.Newspaper
 import androidx.compose.material.icons.filled.Paid
 import androidx.compose.material.icons.filled.PersonSearch
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,7 +64,7 @@ import com.example.gracetastybites.screens.QuickActionItemCard
 import com.example.gracetastybites.sqllite.DatabaseHelper
 import com.example.gracetastybites.ui.theme.SemiBoldLabelLarge
 
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminStuffAndRole(navManager: NavController, dbHelper: DatabaseHelper, sharedPreferences: SharedPreferences) {
 
@@ -82,6 +86,8 @@ fun AdminStuffAndRole(navManager: NavController, dbHelper: DatabaseHelper, share
     val drawableId = remember(profilePicName) {
         context.resources.getIdentifier(profilePicName, "drawable", context.packageName)
     }
+
+
 
     val allUsers = dbHelper.getAllUsers().sortedBy { it.firstname }
 
@@ -190,7 +196,7 @@ fun AdminStuffAndRole(navManager: NavController, dbHelper: DatabaseHelper, share
                 style = MaterialTheme.typography.bodyLarge)
         }
         LazyColumn() {
-            items(items = allUsers, itemContent = {item ->  ListUser(item, navManager, context) })
+            items(items = allUsers, itemContent = {item ->  ListUser(item, navManager, context, dbHelper) })
         }
         Spacer(modifier = Modifier.weight(1f))
 
@@ -205,8 +211,12 @@ fun AdminStuffAndRole(navManager: NavController, dbHelper: DatabaseHelper, share
 }
 
 // Reusable Composable
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListUser(item:UserAuth, navManager: NavController, context: Context) {
+fun ListUser(item:UserAuth, navManager: NavController, context: Context, dbHelper: DatabaseHelper) {
+
+    val showDialog = remember { mutableStateOf(false) }
+
     Row(modifier = Modifier
         .fillMaxWidth()
         .padding(top = 20.dp, start = 20.dp, end = 20.dp)
@@ -254,6 +264,41 @@ fun ListUser(item:UserAuth, navManager: NavController, context: Context) {
         }
         Row(modifier = Modifier.weight(0.2f),  verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.End) {
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSecondary,
+                    modifier = Modifier.height(40.dp).clickable {
+                        showDialog.value = true
+                    }
+
+            )
+
+            if (showDialog.value) {
+                AlertDialog(
+                    onDismissRequest = { showDialog.value = false },
+                    title = { Text("Confirm Delete") },
+                    text = { Text("Do you really want to delete item ${item.firstname} ${item.lastname}?") },
+                    confirmButton = {
+                        Text(
+                            text = "Delete",
+                            modifier = Modifier.clickable {
+                                dbHelper.deleteUserById(item.id)
+                                showDialog.value = false
+                            },
+                            color = Color.Red
+                        )
+                    },
+                    dismissButton = {
+                        Text(
+                            text = "Cancel",
+                            modifier = Modifier.clickable {
+                                showDialog.value = false
+                            }
+                        )
+                    }
+                )
+            }
             Icon(
                 imageVector = Icons.Default.ChevronRight,
                 contentDescription = null,

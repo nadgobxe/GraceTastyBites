@@ -138,6 +138,7 @@ class DatabaseHelper(context: Context) :
         if (cursor.moveToFirst()) {
             do {
                 val user = UserAuth(
+                    id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_ID)),
                     email = cursor.getString(cursor.getColumnIndexOrThrow(COL_EMAIL)),
                     password = cursor.getString(cursor.getColumnIndexOrThrow(COL_PASSWORD)),
                     firstname = cursor.getString(cursor.getColumnIndexOrThrow(COL_FIRST_NAME)),

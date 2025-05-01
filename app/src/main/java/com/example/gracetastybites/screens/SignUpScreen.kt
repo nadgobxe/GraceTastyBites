@@ -82,6 +82,7 @@ fun SignUpScreen(navManager: NavController, dbHelper: DatabaseHelper) {
     val passwordNoMatch = password != confirmPassword
 
     val newUser = UserAuth(
+        id = 0,
         email = email,
         password = password,
         firstname = firstname,

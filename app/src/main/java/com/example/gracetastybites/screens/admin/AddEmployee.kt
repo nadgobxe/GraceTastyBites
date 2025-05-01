@@ -2,6 +2,7 @@ package com.example.gracetastybites.screens.admin
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -39,11 +40,14 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Work
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,6 +60,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.gracetastybites.R
@@ -66,6 +71,7 @@ import com.example.gracetastybites.navigationBar.NavigationBar
 import com.example.gracetastybites.screens.MenuItemCard
 import com.example.gracetastybites.screens.QuickActionItemCard
 import com.example.gracetastybites.sqllite.DatabaseHelper
+import com.example.gracetastybites.ui.theme.MediumRoboto16
 import com.example.gracetastybites.ui.theme.SemiBoldLabelLarge
 
 
@@ -88,6 +94,18 @@ fun AddEmployee(navManager: NavController, dbHelper: DatabaseHelper, sharedPrefe
     val emailEmployee = remember { mutableStateOf("") }
     val position = remember { mutableStateOf("") }
     val role = remember { mutableStateOf("staff") }
+    val defaultPassword = remember { mutableStateOf("plm123") }
+
+    val newEmployee = UserAuth(
+        id = 0,
+        firstname = firstName.value,
+        lastname = lastName.value,
+        email = emailEmployee.value,
+        position = position.value,
+        password = defaultPassword.value,
+        role = role.value,
+        profilePic = ""
+    )
 
     val bgCream = MaterialTheme.colorScheme.background
 
@@ -200,6 +218,15 @@ fun AddEmployee(navManager: NavController, dbHelper: DatabaseHelper, sharedPrefe
             InsertItemCard(Icons.Default.Email, label = "Email", emailEmployee.value, placeholder = "Insert Email", onValueChange = {emailEmployee.value = it})
             InsertItemCard(Icons.Default.Work, label = "Position", position.value, placeholder = "Insert New Position", onValueChange = {position.value = it})
             InsertItemCard(Icons.Default.WorkspacePremium, label = "Role", role.value, placeholder = "Insert New Role", onValueChange = {role.value = it})
+            ReusableButton("Add Employee", "", 250, 50, navManager = navManager, otherCommands = {
+               val rowId = dbHelper.insertUser(newEmployee)
+                if (rowId > 0) {
+                    Toast.makeText(context, "Employee added successfully!", Toast.LENGTH_SHORT).show()
+                    navManager.navigate("staff-role");
+                } else {
+                    Toast.makeText(context, "Failed to add user.", Toast.LENGTH_SHORT).show()
+                }
+            })
         }
 
         Spacer(modifier = Modifier.weight(1f))
@@ -213,6 +240,8 @@ fun AddEmployee(navManager: NavController, dbHelper: DatabaseHelper, sharedPrefe
         }
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InsertItemCard(
     icon: ImageVector,
@@ -224,14 +253,13 @@ fun InsertItemCard(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
-            .background(Color.White)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
             modifier = Modifier
-                .width(48.dp)
+                .width(44.dp)
+                .height(44.dp)
                 .clip(RoundedCornerShape(50))
                 .background(Color(0xFFD84444)),
             contentAlignment = Alignment.Center
@@ -251,12 +279,20 @@ fun InsertItemCard(
                 style = MaterialTheme.typography.labelMedium,
                 color = Color(0xFF7A6651)
             )
-            OutlinedTextField(
+            TextField(
                 value = value,
                 onValueChange = onValueChange,
-                singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text(text = placeholder, color = Color.Gray) }
+                label = { Text(text = placeholder,
+                    style = MediumRoboto16,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Start)},
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    focusedIndicatorColor = Color(0x2F1B0C20),
+                    unfocusedPlaceholderColor = Color(0x2F1B0C20),
+                ),
             )
         }
     }

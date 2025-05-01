@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.PersonSearch
 import androidx.compose.ui.graphics.vector.ImageVector
 
 data class UserAuth(
+    val id: Int,
     val email: String,
     val password: String,
     val firstname: String,
