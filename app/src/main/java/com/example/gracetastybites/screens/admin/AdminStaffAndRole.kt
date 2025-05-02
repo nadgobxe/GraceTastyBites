@@ -2,6 +2,7 @@ package com.example.gracetastybites.screens.admin
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -58,6 +59,7 @@ import com.example.gracetastybites.R
 import com.example.gracetastybites.button.ReusableButton
 import com.example.gracetastybites.mockData.NavBarItem
 import com.example.gracetastybites.mockData.UserAuth
+import com.example.gracetastybites.mockData.adminNavBarItems
 import com.example.gracetastybites.navigationBar.NavigationBar
 import com.example.gracetastybites.screens.MenuItemCard
 import com.example.gracetastybites.screens.QuickActionItemCard
@@ -68,16 +70,7 @@ import com.example.gracetastybites.ui.theme.SemiBoldLabelLarge
 @Composable
 fun AdminStuffAndRole(navManager: NavController, dbHelper: DatabaseHelper, sharedPreferences: SharedPreferences) {
 
-    val adminNavBarItems = listOf(
-        NavBarItem("Home", Icons.Default.Home, onClick = {
-            navManager.navigate("admin-dashboard")
-            println("test if my logic works")}),
-        NavBarItem("Employees", Icons.Default.PersonSearch, onClick = {navManager.navigate("admin-dashboard")}),
-        NavBarItem("Invoice", Icons.Default.Newspaper, onClick = {navManager.navigate("admin-dashboard")}),
-        NavBarItem("Shifts", Icons.Default.CalendarMonth, onClick = {navManager.navigate("admin-dashboard")}),
-        NavBarItem("Menus", Icons.Default.MenuBook, onClick = {navManager.navigate("admin-dashboard")}),
-        NavBarItem("Payroll", Icons.Default.Paid, onClick = {navManager.navigate("admin-dashboard")}),
-    )
+
 
     val bgCream = MaterialTheme.colorScheme.background
 
@@ -205,7 +198,7 @@ fun AdminStuffAndRole(navManager: NavController, dbHelper: DatabaseHelper, share
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            NavigationBar(navManager, adminNavBarItems)
+            NavigationBar(navManager, adminNavBarItems, dbHelper)
         }
     }
 }
@@ -278,12 +271,14 @@ fun ListUser(item:UserAuth, navManager: NavController, context: Context, dbHelpe
                 AlertDialog(
                     onDismissRequest = { showDialog.value = false },
                     title = { Text("Confirm Delete") },
-                    text = { Text("Do you really want to delete item ${item.firstname} ${item.lastname}?") },
+                    text = { Text("Are you sure that you want to delete user ${item.firstname} ${item.lastname}?") },
                     confirmButton = {
                         Text(
                             text = "Delete",
                             modifier = Modifier.clickable {
+                                Toast.makeText(context, "Employee deleted successfully!", Toast.LENGTH_SHORT).show()
                                 dbHelper.deleteUserById(item.id)
+                                navManager.navigate("staff-role");
                                 showDialog.value = false
                             },
                             color = Color.Red

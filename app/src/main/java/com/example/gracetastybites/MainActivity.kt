@@ -44,6 +44,7 @@ import com.example.gracetastybites.screens.AdminDashboardScreen
 import com.example.gracetastybites.screens.Terms
 import com.example.gracetastybites.screens.admin.AdminStuffAndRole
 import com.example.gracetastybites.screens.admin.AddEmployee
+import com.example.gracetastybites.screens.admin.AdminViewUser
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -92,8 +93,11 @@ class MainActivity : ComponentActivity() {
                     composable("staff-role") {
                         AdminStuffAndRole(navManager,dbHelper, sharedPreferences)
                     }
-                    composable("view-user") {
-                        Text("view-user")
+                    composable("view-user?id={id}") { backStackEntry ->
+                        val id = backStackEntry.arguments?.getString("id")
+                        if (id != null) {
+                            AdminViewUser(navManager,dbHelper, sharedPreferences, id)
+                        }
                     }
 
                     composable("add-employee") {

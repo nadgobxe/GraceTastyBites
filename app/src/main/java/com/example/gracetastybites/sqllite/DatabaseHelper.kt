@@ -14,7 +14,7 @@ class DatabaseHelper(context: Context) :
 
     companion object {
         private const val DATABASE_NAME = "graceTastyBitesDB"
-        private const val DATABASE_VERSION = 6
+        private const val DATABASE_VERSION = 7
 
         //staff table
         const val TABLE_STAFF = "staff"
@@ -36,6 +36,11 @@ class DatabaseHelper(context: Context) :
         const val COL_MLI_PICTURE = "picture"
         const val COL_MLI_DESCRIPTION = "description"
 
+        //menu column id
+        const val TABLE_MENU_COLUMN_ID = "menu_column_id"
+        const val COL_MC_ID = "id"
+        const val COL_MC_VALUE = "value"
+
     }
 
     @SuppressLint("SuspiciousIndentation")
@@ -52,8 +57,14 @@ class DatabaseHelper(context: Context) :
                     "$COL_MLI_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "$COL_MLI_NAME TEXT, $COL_MLI_CATEGORY TEXT, $COL_MLI_PRICE TEXT, $COL_MLI_DESCRIPTION TEXT, $COL_MLI_PICTURE INTEGER)"
 
+        val createMCTableQuery =
+            "CREATE TABLE $TABLE_MENU_COLUMN_ID (" +
+                    "$COL_MC_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "$COL_MC_VALUE INTEGER)"
+
             db?.execSQL(createTableQuery)
             db?.execSQL(createMLITableQuery)
+            db?.execSQL(createMCTableQuery)
 
         val insertDefaultStaffQuery = listOf(
             "INSERT INTO $TABLE_STAFF (" +
@@ -108,11 +119,19 @@ class DatabaseHelper(context: Context) :
         insertMenuItems.forEach { query ->
             db?.execSQL(query)
         }
+
+        val insertMenuColumn = listOf(
+            "INSERT INTO $TABLE_MENU_COLUMN_ID ($COL_MC_VALUE) " +
+                "VALUES(0)")
+        insertMenuColumn.forEach { query ->
+            db?.execSQL(query)
+        }
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         db?.execSQL("DROP TABLE IF EXISTS $TABLE_STAFF")
         db?.execSQL("DROP TABLE IF EXISTS $TABLE_MENU_LIST_ITEMS")
+        db?.execSQL("DROP TABLE IF EXISTS $TABLE_MENU_COLUMN_ID")
         onCreate(db)
     }
 
@@ -218,6 +237,32 @@ class DatabaseHelper(context: Context) :
         return db.delete(TABLE_MENU_LIST_ITEMS, "$COL_MLI_ID=?", arrayOf(id.toString()))
     }
 
+    fun getMenuColValue(): Int {
+        val db = this.readableDatabase
+        val cursor: Cursor = db.rawQuery("SELECT * FROM $TABLE_MENU_COLUMN_ID", null )
+
+        var navColumnId = 0
+
+        if (cursor.moveToFirst()) {
+            do {
+                navColumnId = cursor.getInt(cursor.getColumnIndexOrThrow(COL_MC_VALUE))
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        return navColumnId
+
+    }
+
+    fun updateColValue(itemValue: Int): Int {
+        val db = this.writableDatabase
+        val contentValues = ContentValues().apply {
+            put(COL_MC_VALUE, itemValue)
+        }
+        val result = db.update(TABLE_MENU_COLUMN_ID, contentValues, null, null)
+        db.close()
+        return result
+    }
 
 }
 

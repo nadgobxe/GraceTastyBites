@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,12 +25,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.gracetastybites.mockData.NavBarItem
+import com.example.gracetastybites.sqllite.DatabaseHelper
 import com.example.gracetastybites.ui.theme.SmallRoboto10
 
 @Composable
-fun NavigationBar(navManager: NavController, navingationItems: List<NavBarItem>) {
-
-    var selectedIndex by remember { mutableIntStateOf(0) }
+fun NavigationBar(navManager: NavController, navigationItems: List<NavBarItem>, dbHelper: DatabaseHelper) {
+    val extractCurrentIndex = dbHelper.getMenuColValue()
+    println(extractCurrentIndex)
+    var selectedIndex by rememberSaveable { mutableIntStateOf(extractCurrentIndex) }
 
     Column(
         modifier = Modifier.fillMaxWidth().height(94.dp).background(MaterialTheme.colorScheme.onTertiary)
@@ -37,11 +40,10 @@ fun NavigationBar(navManager: NavController, navingationItems: List<NavBarItem>)
         Row(
             modifier = Modifier.weight(1f).height(50.dp).fillMaxWidth()
         ) {
-            navingationItems.forEachIndexed{index, item ->
-            NavigationItemShow(item, index, selectedIndex, onItemSelected = { newIndex -> selectedIndex =
+            navigationItems.forEachIndexed{index, item ->
+            NavigationItemShow(navManager, item, index, selectedIndex, item.path, onItemSelected = { newIndex -> selectedIndex =
                 newIndex as Int
-                item.onClick()
-            })
+            }, dbHelper)
         }
 
         }
@@ -54,9 +56,14 @@ fun NavigationBar(navManager: NavController, navingationItems: List<NavBarItem>)
 
 
 @Composable
-fun NavigationItemShow(item: NavBarItem, index: Int, selectedIndex: Int, onItemSelected: (Any?) -> Unit) {
-
-    val bgColor = if (index == selectedIndex) {
+fun NavigationItemShow(navManager: NavController, item: NavBarItem, index: Int, selectedIndex: Int, path: String, onItemSelected: (Any?) -> Unit, dbHelper: DatabaseHelper) {
+//    val currentPath = navManager.currentBackStackEntry?.destination?.route
+//    println(currentPath) || path == currentPath
+//    dbHelper.updateColValue(0)  // reset
+//    if (path != currentPath) {
+//        dbHelper.updateColValue(0)  // reset
+//    }
+    val bgColor = if (index == selectedIndex ) {
         MaterialTheme.colorScheme.onSurface
     } else {
         MaterialTheme.colorScheme.onTertiary
@@ -65,6 +72,8 @@ fun NavigationItemShow(item: NavBarItem, index: Int, selectedIndex: Int, onItemS
     Column(
         modifier = Modifier.width(72.dp).height(50.dp).background(bgColor).clickable {
             onItemSelected(index)
+            dbHelper.updateColValue(index)
+            navManager.navigate(path)
         },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center

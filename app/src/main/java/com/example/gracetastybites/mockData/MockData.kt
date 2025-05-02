@@ -2,9 +2,13 @@ package com.example.gracetastybites.mockData
 
 import android.graphics.drawable.Drawable
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Newspaper
+import androidx.compose.material.icons.filled.Paid
 import androidx.compose.material.icons.filled.PersonSearch
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.graphics.vector.ImageVector
 
 data class UserAuth(
@@ -39,8 +43,26 @@ data class MenuList(
 data class NavBarItem(
     val title: String,
     val icon: ImageVector,
-    val onClick: () -> Unit
+    val path: String,
 )
+
+
+data class InsertItem(
+    val icon: ImageVector,
+    val label: String,
+    val value: MutableState<String>,
+    val placeholder: String
+)
+
+val adminNavBarItems = listOf(
+    NavBarItem("Home", Icons.Default.Home, "admin-dashboard"),
+    NavBarItem("Employees", Icons.Default.PersonSearch, "staff-role"),
+    NavBarItem("Invoice", Icons.Default.Newspaper, "login"),
+    NavBarItem("Shifts", Icons.Default.CalendarMonth, ""),
+    NavBarItem("Menus", Icons.Default.MenuBook, ""),
+    NavBarItem("Payroll", Icons.Default.Paid, ""),
+)
+
 
 
 

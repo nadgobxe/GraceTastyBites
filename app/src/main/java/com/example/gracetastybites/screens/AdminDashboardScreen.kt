@@ -56,6 +56,7 @@ import com.example.gracetastybites.sqllite.DatabaseHelper
 import com.example.gracetastybites.ui.theme.SemiBoldLabelLarge
 import com.example.gracetastybites.navigationBar.NavigationBar
 import com.example.gracetastybites.mockData.NavBarItem
+import com.example.gracetastybites.mockData.adminNavBarItems
 import com.example.gracetastybites.ui.theme.LabelInput
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -88,18 +89,7 @@ fun AdminDashboardScreen(navManager: NavController, dbHelper: DatabaseHelper, sh
         QuickActionItem("Manage Menu", "", Icons.AutoMirrored.Filled.MenuBook, onClick = {navManager.navigate("manage-menu")}),
     )
 
-    val adminNavBarItems = listOf(
-        NavBarItem("Home", Icons.Default.Home, onClick = {
-            navManager.navigate("admin-dashboard")
-            println("test if my logic works")}),
-        NavBarItem("Employees", Icons.Default.PersonSearch, onClick = {navManager.navigate("admin-dashboard")}),
-        NavBarItem("Invoice", Icons.Default.Newspaper, onClick = {navManager.navigate("admin-dashboard")}),
-        NavBarItem("Shifts", Icons.Default.CalendarMonth, onClick = {navManager.navigate("admin-dashboard")}),
-        NavBarItem("Menus", Icons.Default.MenuBook, onClick = {navManager.navigate("admin-dashboard")}),
-        NavBarItem("Payroll", Icons.Default.Paid, onClick = {navManager.navigate("admin-dashboard")}),
-    )
-
-    val menuFoodList = remember { dbHelper.getAllMenuItems() }
+      val menuFoodList = remember { dbHelper.getAllMenuItems() }
 
 
     Column(
@@ -272,7 +262,7 @@ fun AdminDashboardScreen(navManager: NavController, dbHelper: DatabaseHelper, sh
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            NavigationBar(navManager, adminNavBarItems)
+            NavigationBar(navManager, adminNavBarItems, dbHelper)
         }
     }
 }

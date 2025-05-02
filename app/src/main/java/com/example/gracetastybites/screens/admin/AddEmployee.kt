@@ -65,8 +65,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.gracetastybites.R
 import com.example.gracetastybites.button.ReusableButton
+import com.example.gracetastybites.mockData.InsertItem
 import com.example.gracetastybites.mockData.NavBarItem
 import com.example.gracetastybites.mockData.UserAuth
+import com.example.gracetastybites.mockData.adminNavBarItems
 import com.example.gracetastybites.navigationBar.NavigationBar
 import com.example.gracetastybites.screens.MenuItemCard
 import com.example.gracetastybites.screens.QuickActionItemCard
@@ -78,16 +80,7 @@ import com.example.gracetastybites.ui.theme.SemiBoldLabelLarge
 @Composable
 fun AddEmployee(navManager: NavController, dbHelper: DatabaseHelper, sharedPreferences: SharedPreferences) {
 
-    val adminNavBarItems = listOf(
-        NavBarItem("Home", Icons.Default.Home, onClick = {
-            navManager.navigate("admin-dashboard")
-            println("test if my logic works")}),
-        NavBarItem("Employees", Icons.Default.PersonSearch, onClick = {navManager.navigate("admin-dashboard")}),
-        NavBarItem("Invoice", Icons.Default.Newspaper, onClick = {navManager.navigate("admin-dashboard")}),
-        NavBarItem("Shifts", Icons.Default.CalendarMonth, onClick = {navManager.navigate("admin-dashboard")}),
-        NavBarItem("Menus", Icons.Default.MenuBook, onClick = {navManager.navigate("admin-dashboard")}),
-        NavBarItem("Payroll", Icons.Default.Paid, onClick = {navManager.navigate("admin-dashboard")}),
-    )
+
 
     val firstName = remember { mutableStateOf("") }
     val lastName = remember { mutableStateOf("") }
@@ -95,6 +88,14 @@ fun AddEmployee(navManager: NavController, dbHelper: DatabaseHelper, sharedPrefe
     val position = remember { mutableStateOf("") }
     val role = remember { mutableStateOf("staff") }
     val defaultPassword = remember { mutableStateOf("plm123") }
+
+    val insertItems = listOf(
+        InsertItem(Icons.Default.Person, "First Name", firstName, "Insert First Name"),
+        InsertItem(Icons.Default.Person, "Last Name", lastName, "Insert Last Name"),
+        InsertItem(Icons.Default.Email, "Email", emailEmployee, "Insert Email"),
+        InsertItem(Icons.Default.Work, "Position", position, "Insert New Position"),
+        InsertItem(Icons.Default.WorkspacePremium, "Role", role, "Insert New Role")
+    )
 
     val newEmployee = UserAuth(
         id = 0,
@@ -104,7 +105,7 @@ fun AddEmployee(navManager: NavController, dbHelper: DatabaseHelper, sharedPrefe
         position = position.value,
         password = defaultPassword.value,
         role = role.value,
-        profilePic = ""
+        profilePic = " "
     )
 
     val bgCream = MaterialTheme.colorScheme.background
@@ -213,11 +214,16 @@ fun AddEmployee(navManager: NavController, dbHelper: DatabaseHelper, sharedPrefe
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            InsertItemCard(Icons.Default.Person, label = "First Name", firstName.value, placeholder = "Insert First Name", onValueChange = {firstName.value = it})
-            InsertItemCard(Icons.Default.Person, label = "Last Name", lastName.value, placeholder = "Insert Last Name", onValueChange = {lastName.value = it})
-            InsertItemCard(Icons.Default.Email, label = "Email", emailEmployee.value, placeholder = "Insert Email", onValueChange = {emailEmployee.value = it})
-            InsertItemCard(Icons.Default.Work, label = "Position", position.value, placeholder = "Insert New Position", onValueChange = {position.value = it})
-            InsertItemCard(Icons.Default.WorkspacePremium, label = "Role", role.value, placeholder = "Insert New Role", onValueChange = {role.value = it})
+
+            insertItems.forEach { item ->
+                InsertItemCard(
+                    icon = item.icon,
+                    label = item.label,
+                    value = item.value.value,
+                    placeholder = item.placeholder,
+                    onValueChange = { item.value.value = it }
+                )
+            }
             ReusableButton("Add Employee", "", 250, 50, navManager = navManager, otherCommands = {
                val rowId = dbHelper.insertUser(newEmployee)
                 if (rowId > 0) {
@@ -236,7 +242,7 @@ fun AddEmployee(navManager: NavController, dbHelper: DatabaseHelper, sharedPrefe
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            NavigationBar(navManager, adminNavBarItems)
+            NavigationBar(navManager, adminNavBarItems, dbHelper)
         }
     }
 }
