@@ -50,7 +50,7 @@ data class NavBarItem(
 data class InsertItem(
     val icon: ImageVector,
     val label: String,
-    val value: MutableState<String>,
+    var value: MutableState<String>,
     val placeholder: String
 )
 

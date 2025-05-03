@@ -96,7 +96,7 @@ class MainActivity : ComponentActivity() {
                     composable("view-user?id={id}") { backStackEntry ->
                         val id = backStackEntry.arguments?.getString("id")
                         if (id != null) {
-                            AdminViewUser(navManager,dbHelper, sharedPreferences, id)
+                            AdminViewUser(navManager, dbHelper, sharedPreferences, id.toString())
                         }
                     }
 

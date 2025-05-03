@@ -14,7 +14,7 @@ class DatabaseHelper(context: Context) :
 
     companion object {
         private const val DATABASE_NAME = "graceTastyBitesDB"
-        private const val DATABASE_VERSION = 7
+        private const val DATABASE_VERSION = 8
 
         //staff table
         const val TABLE_STAFF = "staff"
@@ -149,6 +149,23 @@ class DatabaseHelper(context: Context) :
         return db.insert(TABLE_STAFF, null, values)
     }
 
+    @SuppressLint("Recycle")
+    fun updateUser(user: UserAuth): Int {
+        val db = this.writableDatabase
+
+        val values = ContentValues().apply {
+            put(COL_EMAIL, user.email)
+            put(COL_PASSWORD, user.password)
+            put(COL_FIRST_NAME, user.firstname)
+            put(COL_LAST_NAME, user.lastname)
+            put(COL_ROLE, user.role)
+            put(COL_POSITION, user.position)
+            put(COL_PROFILE_PIC, user.profilePic)
+        }
+        return db.update(TABLE_STAFF, values, "$COL_ID = ?", arrayOf(user.id.toString()))
+    }
+
+
     fun getAllUsers(): List<UserAuth> {
         val usersList = mutableListOf<UserAuth>()
         val db = this.readableDatabase
@@ -173,6 +190,29 @@ class DatabaseHelper(context: Context) :
         cursor.close()
         return usersList
     }
+
+    fun getUserById(id: Int): UserAuth? {
+        val db = this.readableDatabase
+        val cursor: Cursor = db.rawQuery("SELECT * FROM $TABLE_STAFF WHERE $COL_ID = ?", arrayOf(id.toString())
+        )
+        var user: UserAuth? = null
+        if (cursor.moveToFirst()) {
+                user = UserAuth(
+                    id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_ID)),
+                    email = cursor.getString(cursor.getColumnIndexOrThrow(COL_EMAIL)),
+                    password = cursor.getString(cursor.getColumnIndexOrThrow(COL_PASSWORD)),
+                    firstname = cursor.getString(cursor.getColumnIndexOrThrow(COL_FIRST_NAME)),
+                    lastname = cursor.getString(cursor.getColumnIndexOrThrow(COL_LAST_NAME)),
+                    position = cursor.getString(cursor.getColumnIndexOrThrow(COL_POSITION)),
+                    role = cursor.getString(cursor.getColumnIndexOrThrow(COL_ROLE)),
+                    profilePic = cursor.getString(cursor.getColumnIndexOrThrow(COL_PROFILE_PIC))
+                )
+        }
+
+        cursor.close()
+        return user
+    }
+
     fun deleteUserById(id: Int): Int {
         val db = this.writableDatabase
         return db.delete(TABLE_STAFF, "$COL_ID=?", arrayOf(id.toString()))

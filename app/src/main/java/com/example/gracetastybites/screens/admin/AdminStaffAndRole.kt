@@ -213,7 +213,10 @@ fun ListUser(item:UserAuth, navManager: NavController, context: Context, dbHelpe
     Row(modifier = Modifier
         .fillMaxWidth()
         .padding(top = 20.dp, start = 20.dp, end = 20.dp)
-        .clickable { navManager.navigate("view-user") },
+        .clickable {
+            println("Navigating to user ID: ${item.id}")
+            navManager.navigate("view-user?id=${item.id}")
+        },
         verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.Center) // remember about backstack entry
     {
@@ -261,9 +264,11 @@ fun ListUser(item:UserAuth, navManager: NavController, context: Context, dbHelpe
                 imageVector = Icons.Default.Delete,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSecondary,
-                    modifier = Modifier.height(40.dp).clickable {
-                        showDialog.value = true
-                    }
+                    modifier = Modifier
+                        .height(40.dp)
+                        .clickable {
+                            showDialog.value = true
+                        }
 
             )
 
