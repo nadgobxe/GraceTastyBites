@@ -185,7 +185,7 @@ fun SignUpScreen(navManager: NavController, dbHelper: DatabaseHelper) {
                         text = "Email Address",
                         style = TextStyle(fontWeight = FontWeight.Medium)
                     )},
-                label = { Text(text ="Email Address1",
+                label = { Text(text ="Email Address",
                     style = LabelInput,
                     color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.fillMaxWidth().padding(top = 20.dp),

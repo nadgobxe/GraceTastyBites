@@ -45,6 +45,8 @@ import com.example.gracetastybites.screens.Terms
 import com.example.gracetastybites.screens.admin.AdminStuffAndRole
 import com.example.gracetastybites.screens.admin.AddEmployee
 import com.example.gracetastybites.screens.admin.AdminViewUser
+import com.example.gracetastybites.screens.admin.AssignShit
+import com.example.gracetastybites.screens.admin.ViewShifts
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -108,7 +110,10 @@ class MainActivity : ComponentActivity() {
                         Text("add-invoice")
                     }
                     composable("manage-shifts") {
-                        Text("manage-shifts")
+                        ViewShifts(navManager, dbHelper, sharedPreferences)
+                    }
+                    composable("assign-shift") {
+                        AssignShit(navManager, dbHelper, sharedPreferences)
                     }
                     composable("manage-menu") {
                         Text("manage-menu")

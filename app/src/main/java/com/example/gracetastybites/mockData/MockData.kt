@@ -58,11 +58,18 @@ val adminNavBarItems = listOf(
     NavBarItem("Home", Icons.Default.Home, "admin-dashboard"),
     NavBarItem("Employees", Icons.Default.PersonSearch, "staff-role"),
     NavBarItem("Invoice", Icons.Default.Newspaper, "login"),
-    NavBarItem("Shifts", Icons.Default.CalendarMonth, ""),
+    NavBarItem("Shifts", Icons.Default.CalendarMonth, "manage-shifts"),
     NavBarItem("Menus", Icons.Default.MenuBook, ""),
     NavBarItem("Payroll", Icons.Default.Paid, ""),
 )
 
-
+data class Shift(
+    val id: Int = 0,
+    val staffId: Int,
+    val shiftDate: String,
+    val startTime: String,
+    val endTime: String,
+    val status: String = "pending"
+)
 
 

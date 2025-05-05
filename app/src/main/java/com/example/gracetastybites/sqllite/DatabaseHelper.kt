@@ -7,6 +7,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.example.gracetastybites.mockData.MenuList
+import com.example.gracetastybites.mockData.Shift
 import com.example.gracetastybites.mockData.UserAuth
 
 class DatabaseHelper(context: Context) :
@@ -14,7 +15,7 @@ class DatabaseHelper(context: Context) :
 
     companion object {
         private const val DATABASE_NAME = "graceTastyBitesDB"
-        private const val DATABASE_VERSION = 8
+        private const val DATABASE_VERSION = 11
 
         //staff table
         const val TABLE_STAFF = "staff"
@@ -41,6 +42,15 @@ class DatabaseHelper(context: Context) :
         const val COL_MC_ID = "id"
         const val COL_MC_VALUE = "value"
 
+        // shifts table
+        const val COL_SHIFTS_ID = "id"
+        const val TABLE_SHIFTS = "shifts"
+        const val COL_STAFF_ID = "staff_id"
+        const val COL_SHIFT_DATE = "shift_date"
+        const val COL_START_TIME = "start_time"
+        const val COL_END_TIME = "end_time"
+        const val COL_STATUS = "status"
+
     }
 
     @SuppressLint("SuspiciousIndentation")
@@ -62,9 +72,20 @@ class DatabaseHelper(context: Context) :
                     "$COL_MC_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "$COL_MC_VALUE INTEGER)"
 
+        val createShiftsTableQuery =
+            "CREATE TABLE $TABLE_SHIFTS (" +
+                    "$COL_SHIFTS_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "$COL_STAFF_ID INTEGER NOT NULL, " +
+                    "$COL_SHIFT_DATE TEXT NOT NULL, " +
+                    "$COL_START_TIME TEXT NOT NULL, " +
+                    "$COL_END_TIME TEXT NOT NULL, " +
+                    "$COL_STATUS TEXT DEFAULT 'pending', " +
+                    "FOREIGN KEY ($COL_STAFF_ID) REFERENCES $TABLE_STAFF($COL_ID))"
+
             db?.execSQL(createTableQuery)
             db?.execSQL(createMLITableQuery)
             db?.execSQL(createMCTableQuery)
+            db?.execSQL(createShiftsTableQuery)
 
         val insertDefaultStaffQuery = listOf(
             "INSERT INTO $TABLE_STAFF (" +
@@ -106,6 +127,18 @@ class DatabaseHelper(context: Context) :
 
         insertDefaultStaffQuery.forEach {query -> db?.execSQL(query)}
 
+        val insertDefaultShifts = listOf(
+            "INSERT INTO $TABLE_SHIFTS (" +
+                "$COL_STAFF_ID, $COL_SHIFT_DATE, $COL_START_TIME, $COL_END_TIME, $COL_STATUS" +
+                ") VALUES (" +
+                "2, '2025-05-07', '09:00', '17:00', 'pending');",
+            "INSERT INTO $TABLE_SHIFTS (" +
+                    "$COL_STAFF_ID, $COL_SHIFT_DATE, $COL_START_TIME, $COL_END_TIME, $COL_STATUS" +
+                    ") VALUES (" +
+                    "3, '2025-05-07', '09:00', '17:00', 'pending');"
+        )
+
+        insertDefaultShifts.forEach{query -> db?.execSQL(query)}
 
         val insertMenuItems = listOf(
             "INSERT INTO $TABLE_MENU_LIST_ITEMS ($COL_MLI_NAME, $COL_MLI_CATEGORY, $COL_MLI_PRICE, $COL_MLI_DESCRIPTION, $COL_MLI_PICTURE) " +
@@ -122,7 +155,8 @@ class DatabaseHelper(context: Context) :
 
         val insertMenuColumn = listOf(
             "INSERT INTO $TABLE_MENU_COLUMN_ID ($COL_MC_VALUE) " +
-                "VALUES(0)")
+                "VALUES(0);")
+
         insertMenuColumn.forEach { query ->
             db?.execSQL(query)
         }
@@ -132,6 +166,7 @@ class DatabaseHelper(context: Context) :
         db?.execSQL("DROP TABLE IF EXISTS $TABLE_STAFF")
         db?.execSQL("DROP TABLE IF EXISTS $TABLE_MENU_LIST_ITEMS")
         db?.execSQL("DROP TABLE IF EXISTS $TABLE_MENU_COLUMN_ID")
+        db?.execSQL("DROP TABLE IF EXISTS $TABLE_SHIFTS")
         onCreate(db)
     }
 
@@ -149,7 +184,6 @@ class DatabaseHelper(context: Context) :
         return db.insert(TABLE_STAFF, null, values)
     }
 
-    @SuppressLint("Recycle")
     fun updateUser(user: UserAuth): Int {
         val db = this.writableDatabase
 
@@ -166,10 +200,14 @@ class DatabaseHelper(context: Context) :
     }
 
 
-    fun getAllUsers(): List<UserAuth> {
+    fun getAllUsers(filterCategory: String? = null): List<UserAuth> {
         val usersList = mutableListOf<UserAuth>()
         val db = this.readableDatabase
-        val cursor: Cursor = db.rawQuery("SELECT * FROM $TABLE_STAFF", null)
+        val cursor: Cursor = if (filterCategory != null) {
+            db.rawQuery("SELECT * FROM $TABLE_STAFF WHERE role=?", arrayOf(filterCategory))
+        } else {
+            db.rawQuery("SELECT * FROM $TABLE_STAFF", null)
+        }
 
         if (cursor.moveToFirst()) {
             do {
@@ -304,5 +342,43 @@ class DatabaseHelper(context: Context) :
         return result
     }
 
+    fun getAllShifts(): List<Shift> {
+        val db = this.readableDatabase
+        val cursor: Cursor = db.rawQuery("SELECT * FROM $TABLE_SHIFTS", null)
+        val allShifts = mutableListOf<Shift>()
+
+        if (cursor.moveToFirst()) {
+            do {
+                val shiftItem = Shift(
+                    id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_SHIFTS_ID)),
+                    staffId = cursor.getInt(cursor.getColumnIndexOrThrow(COL_STAFF_ID)),
+                    shiftDate = cursor.getString(cursor.getColumnIndexOrThrow(COL_SHIFT_DATE)),
+                    startTime = cursor.getString(cursor.getColumnIndexOrThrow(COL_START_TIME)),
+                    endTime = cursor.getString(cursor.getColumnIndexOrThrow(COL_END_TIME)),
+                    status = cursor.getString(cursor.getColumnIndexOrThrow(COL_STATUS))
+                )
+                allShifts.add(shiftItem)
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        return allShifts
+    }
+
+    fun insertShift(staffId: Int, shiftDate: String, startTime: String, endTime: String): Long {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(COL_STAFF_ID, staffId)
+            put(COL_SHIFT_DATE, shiftDate)
+            put(COL_START_TIME, startTime)
+            put(COL_END_TIME, endTime)
+        }
+        return db.insert(TABLE_SHIFTS, null, values)
+    }
+
+    fun deleteShiftById(id: Int): Int {
+        val db = this.writableDatabase
+        return db.delete(TABLE_SHIFTS, "$COL_SHIFTS_ID=?", arrayOf(id.toString()))
+    }
 }
 

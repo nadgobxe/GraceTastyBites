@@ -32,12 +32,12 @@ Reusable Button
  */
 
 @Composable
-fun ReusableButton(buttonText: String, path: String, sizeWidth:Int, sizeHeight:Int, navManager: NavController, otherCommands: () -> Unit = {}) {
+fun ReusableButton(buttonText: String, path: String, sizeWidth:Int, sizeHeight:Int, navManager: NavController? = null, otherCommands: () -> Unit = {}) {
 
     Button(onClick = {
         otherCommands()
         if (path.isNotEmpty()) {
-            navManager.navigate(path) //https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/is-not-empty.html
+            navManager?.navigate(path) //https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/is-not-empty.html
         }
                      },
         modifier = Modifier

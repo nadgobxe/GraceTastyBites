@@ -47,6 +47,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.gracetastybites.R
+import com.example.gracetastybites.header.Header
 import com.example.gracetastybites.mockData.MenuList
 import com.example.gracetastybites.mockData.QuickActionItem
 
@@ -72,11 +73,7 @@ fun AdminDashboardScreen(navManager: NavController, dbHelper: DatabaseHelper, sh
 
 
 
-    val context = LocalContext.current
-    val profilePicName = sharedPreferences.getString("profilePic", "") ?: ""
-    val drawableId = remember(profilePicName) {
-        context.resources.getIdentifier(profilePicName, "drawable", context.packageName)
-    }
+
 // debug - extract image id for pre-design
 //    val drawableIdTest = context.resources.getIdentifier("chicken_nuggets".toString(), "drawable", context.packageName)
 //    println("I test the image id $drawableIdTest")
@@ -99,81 +96,7 @@ fun AdminDashboardScreen(navManager: NavController, dbHelper: DatabaseHelper, sh
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 23.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .weight(0.65f)
-                    .padding(start = 21.dp)
-            ) {
-                if (drawableId != 0) {
-                    Image(
-                        painter = painterResource(id = drawableId),
-                    contentDescription = "User",
-                    modifier = Modifier
-                        .width(44.dp)
-                        .height(44.dp),
-                    contentScale = ContentScale.Fit
-                )
-                } else {
-                    Image(
-                        painter = painterResource(id = R.drawable.user),
-                        contentDescription = "User",
-                        modifier = Modifier
-                            .width(44.dp)
-                            .height(44.dp),
-                        contentScale = ContentScale.Fit
-                    )
-                }
-            }
-            Box(
-                modifier = Modifier
-                    .weight(1f),
-                contentAlignment = Alignment.CenterStart,
-
-                ) {
-                val email = sharedPreferences.getString("email", "") ?: ""
-                val firstname = sharedPreferences.getString("firstname", "") ?: ""
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(text = "Welcome back,",
-                        style = SemiBoldLabelLarge,
-                        color = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.6f)
-                    )
-                    Text(text = firstname,
-                        modifier = Modifier.padding(top = 4.dp),
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSecondary)
-                }
-            }
-            Box(
-                modifier = Modifier
-                    .weight(0.65f)
-                    .padding(end = 21.dp),
-                contentAlignment = Alignment.CenterEnd,
-
-                ) {
-                Button(onClick = {
-                    val editor = sharedPreferences.edit()
-                    editor.remove("email")
-                    editor.remove("firstname")
-                    editor.remove("userRole")
-                    editor.remove("isLoggedIn")
-                    editor.apply()
-                    navManager.navigate("login") // try by adding a backstackentry value login/{clearShared} and then in login clear sharePref one more time
-                }) {
-                    Text(text = "Log out")
-                }
-            }
-        }
-        HorizontalDivider(thickness = 1.dp, color = Color(0x2F1B0C20))
+        Header(sharedPreferences, navManager)
         Row(modifier = Modifier
             .fillMaxWidth()
             .padding(top = 51.dp),

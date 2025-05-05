@@ -36,7 +36,7 @@ val AppTypography = Typography(
 val ButtonTextStyle = TextStyle(
     fontFamily = Roboto,
     fontWeight = FontWeight.Normal,
-    fontSize = 22.sp
+    fontSize = 14.sp
 )
 
 val LabelInput = TextStyle(
