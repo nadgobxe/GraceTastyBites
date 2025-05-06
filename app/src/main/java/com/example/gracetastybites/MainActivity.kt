@@ -46,6 +46,8 @@ import com.example.gracetastybites.screens.admin.AdminStuffAndRole
 import com.example.gracetastybites.screens.admin.AddEmployee
 import com.example.gracetastybites.screens.admin.AdminViewUser
 import com.example.gracetastybites.screens.admin.AssignShit
+import com.example.gracetastybites.screens.admin.FilterDate
+import com.example.gracetastybites.screens.admin.ShiftsPerEmployee
 import com.example.gracetastybites.screens.admin.ViewShifts
 
 class MainActivity : ComponentActivity() {
@@ -104,6 +106,14 @@ class MainActivity : ComponentActivity() {
 
                     composable("add-employee") {
                         AddEmployee(navManager,dbHelper, sharedPreferences)
+                    }
+
+                    composable("filter-date") {
+                        FilterDate(navManager, dbHelper, sharedPreferences)
+                    }
+
+                    composable("shifts-employee") {
+                        ShiftsPerEmployee(navManager, dbHelper, sharedPreferences)
                     }
 
                     composable("add-invoice") {

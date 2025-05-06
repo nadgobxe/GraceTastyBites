@@ -72,4 +72,16 @@ data class Shift(
     val status: String = "pending"
 )
 
+data class Payroll(
+    val id: Int = 0,
+    val staffId: Int,
+    val totalShiftsWorked: Int,
+    val payPerShift: Double,
+    val totalEarnings: Double,
+    val fileId: String
+)
+
+
+
+
 

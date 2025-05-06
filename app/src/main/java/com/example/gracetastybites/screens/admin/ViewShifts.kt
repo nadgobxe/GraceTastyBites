@@ -76,6 +76,19 @@ fun ViewShifts(navManager: NavController, dbHelper: DatabaseHelper, sharedPrefer
         ) {
             ReusableButton("Assign Shift", "assign-shift", 150, 50, navManager)
         }
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(20.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            ReusableButton("Filter by Date", "filter-date", 150, 50, navManager)
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(20.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            ReusableButton("Shifts per Employee", "shifts-employee", 170, 50, navManager)
+        }
 
         //list current shifts
         Row( modifier = Modifier.fillMaxWidth().padding(20.dp),

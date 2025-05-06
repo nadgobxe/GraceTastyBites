@@ -7,6 +7,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.example.gracetastybites.mockData.MenuList
+import com.example.gracetastybites.mockData.Payroll
 import com.example.gracetastybites.mockData.Shift
 import com.example.gracetastybites.mockData.UserAuth
 
@@ -15,7 +16,7 @@ class DatabaseHelper(context: Context) :
 
     companion object {
         private const val DATABASE_NAME = "graceTastyBitesDB"
-        private const val DATABASE_VERSION = 11
+        private const val DATABASE_VERSION = 12
 
         //staff table
         const val TABLE_STAFF = "staff"
@@ -43,6 +44,7 @@ class DatabaseHelper(context: Context) :
         const val COL_MC_VALUE = "value"
 
         // shifts table
+
         const val COL_SHIFTS_ID = "id"
         const val TABLE_SHIFTS = "shifts"
         const val COL_STAFF_ID = "staff_id"
@@ -51,9 +53,17 @@ class DatabaseHelper(context: Context) :
         const val COL_END_TIME = "end_time"
         const val COL_STATUS = "status"
 
+        //payroll table
+        const val TABLE_PAYROLL = "payroll"
+        const val COL_PAYROLL_ID = "id"
+        const val COL_P_STAFF_ID = "staff_id"
+        const val COL_TOTAL_SHIFTS_WORKED = "total_shifts_worked"
+        const val COL_PAY_PER_SHIFT = "pay_per_shift"
+        const val COL_TOTAL_EARNINGS = "total_earnings"
+        const val COL_FILE_ID = "file_id"
     }
 
-    @SuppressLint("SuspiciousIndentation")
+    @SuppressLint("SuspiciousIndentation", "SQLiteString")
     override fun onCreate(db: SQLiteDatabase?) {
         val createTableQuery =
             "CREATE TABLE $TABLE_STAFF (" +
@@ -82,10 +92,21 @@ class DatabaseHelper(context: Context) :
                     "$COL_STATUS TEXT DEFAULT 'pending', " +
                     "FOREIGN KEY ($COL_STAFF_ID) REFERENCES $TABLE_STAFF($COL_ID))"
 
+        val createPayrollTableQuery =
+            "CREATE TABLE $TABLE_PAYROLL (" +
+                    "$COL_PAYROLL_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "$COL_P_STAFF_ID INTEGER NOT NULL, " +
+                    "$COL_TOTAL_SHIFTS_WORKED INTEGER NOT NULL, " +
+                    "$COL_PAY_PER_SHIFT REAL NOT NULL, " +
+                    "$COL_TOTAL_EARNINGS REAL NOT NULL, " +
+                    "$COL_FILE_ID STRING, " +
+                    "FOREIGN KEY ($COL_STAFF_ID) REFERENCES $TABLE_STAFF($COL_ID))"
+
             db?.execSQL(createTableQuery)
             db?.execSQL(createMLITableQuery)
             db?.execSQL(createMCTableQuery)
             db?.execSQL(createShiftsTableQuery)
+            db?.execSQL(createPayrollTableQuery)
 
         val insertDefaultStaffQuery = listOf(
             "INSERT INTO $TABLE_STAFF (" +
@@ -167,6 +188,7 @@ class DatabaseHelper(context: Context) :
         db?.execSQL("DROP TABLE IF EXISTS $TABLE_MENU_LIST_ITEMS")
         db?.execSQL("DROP TABLE IF EXISTS $TABLE_MENU_COLUMN_ID")
         db?.execSQL("DROP TABLE IF EXISTS $TABLE_SHIFTS")
+        db?.execSQL("DROP TABLE IF EXISTS $TABLE_PAYROLL")
         onCreate(db)
     }
 
@@ -342,9 +364,15 @@ class DatabaseHelper(context: Context) :
         return result
     }
 
-    fun getAllShifts(): List<Shift> {
+    fun getAllShifts(filterCategory: String? = null, valueCategory: String? = null): List<Shift> {
         val db = this.readableDatabase
-        val cursor: Cursor = db.rawQuery("SELECT * FROM $TABLE_SHIFTS", null)
+
+        val cursor: Cursor = if (filterCategory != null) {
+            db.rawQuery("SELECT * FROM $TABLE_SHIFTS WHERE $filterCategory = ?", arrayOf(valueCategory))
+        } else {
+            db.rawQuery("SELECT * FROM $TABLE_SHIFTS", null)
+        }
+
         val allShifts = mutableListOf<Shift>()
 
         if (cursor.moveToFirst()) {
@@ -365,6 +393,25 @@ class DatabaseHelper(context: Context) :
         return allShifts
     }
 
+    fun getCompletedShifts(staffId: Int, startDate: String, endDate: String): Int {
+        val db = this.readableDatabase
+
+        val cursor: Cursor = db.rawQuery(" SELECT COUNT(*) FROM $TABLE_SHIFTS " +
+                "WHERE $COL_STAFF_ID = ? " +
+                "AND $COL_STATUS = 'accepted' " +
+                "AND $COL_SHIFT_DATE BETWEEN ? AND ?", arrayOf(staffId.toString(), startDate, endDate))
+
+
+        var count = 0
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0)
+        }
+
+        cursor.close()
+        return count
+    }
+
+
     fun insertShift(staffId: Int, shiftDate: String, startTime: String, endTime: String): Long {
         val db = this.writableDatabase
         val values = ContentValues().apply {
@@ -379,6 +426,18 @@ class DatabaseHelper(context: Context) :
     fun deleteShiftById(id: Int): Int {
         val db = this.writableDatabase
         return db.delete(TABLE_SHIFTS, "$COL_SHIFTS_ID=?", arrayOf(id.toString()))
+    }
+
+    fun insertPayrollItem(payroll: Payroll): Long {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(COL_P_STAFF_ID, payroll.staffId)
+            put(COL_TOTAL_SHIFTS_WORKED, payroll.totalShiftsWorked)
+            put(COL_PAY_PER_SHIFT, payroll.payPerShift)
+            put(COL_TOTAL_EARNINGS, payroll.totalEarnings)
+            put(COL_FILE_ID, payroll.fileId)
+        }
+        return db.insert(TABLE_PAYROLL, null, values)
     }
 }
 
